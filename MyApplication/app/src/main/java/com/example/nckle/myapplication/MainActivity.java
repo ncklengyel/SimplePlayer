@@ -1,6 +1,7 @@
 package com.example.nckle.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
@@ -12,7 +13,7 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-    private  MediaPlayer mp;
+    //private  MediaPlayer mp;
     private Button playButton;
     private Button stopButton;
     private SeekBar seekBar;
@@ -26,9 +27,9 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mp = MediaPlayer.create(this, R.raw.song);
+        final TopMediaPlayer topMediaPlayer = new TopMediaPlayer(new MediaServer(this,R.raw.song));
 
-        durationSong = mp.getDuration();
+        durationSong = topMediaPlayer.getDuration();
 
         playButton = (Button) findViewById(R.id.playButton);
         stopButton = (Button) findViewById(R.id.stopButton);
@@ -45,13 +46,11 @@ public class MainActivity extends Activity {
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if(mp != null){
 
-                    int currentPosition = mp.getCurrentPosition();
+                    int currentPosition = topMediaPlayer.getCurrentPosition();
                     seekBar.setProgress(currentPosition);
                     timeLeft.setText(millisecondToMMSS(currentPosition));
 
-                }
                 handler.postDelayed(this, 1000);
             }
         });
@@ -59,8 +58,8 @@ public class MainActivity extends Activity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(mp != null && fromUser){
-                    mp.seekTo(progress);
+                if(fromUser){
+                    topMediaPlayer.seekTo(progress);
                 }
             }
 
@@ -78,11 +77,13 @@ public class MainActivity extends Activity {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!mp.isPlaying())
+                if (!topMediaPlayer.isPlaying())
                 {
-                    play();
+                   topMediaPlayer.play();
+                    switchPausePlayButton();
                 }else {
-                    pause();
+                    topMediaPlayer.pause();
+                    resetPlayButton();
                 }
             }
         });
@@ -91,8 +92,8 @@ public class MainActivity extends Activity {
         stopButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                stop();
+                topMediaPlayer.stop();
+                resetPlayButton();
 
             }
         });
@@ -111,7 +112,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mp.release();
+        //release mediaplayer
     }
 
     /**
@@ -136,20 +137,5 @@ public class MainActivity extends Activity {
 
     }
 
-    private void pause(){
-        mp.pause();
-        resetPlayButton();
-    }
-
-    private void play(){
-        mp.start();
-        switchPausePlayButton();
-    }
-
-    private void stop(){
-        mp.stop();
-        mp = MediaPlayer.create(MainActivity.this, R.raw.song);
-        resetPlayButton();
-    }
 }
 
