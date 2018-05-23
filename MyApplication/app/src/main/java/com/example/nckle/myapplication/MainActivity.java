@@ -1,15 +1,18 @@
 package com.example.nckle.myapplication;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.view.View;
 import android.widget.SeekBar;
 import android.widget.Button;
 import android.os.Handler;
 import android.widget.TextView;
+import android.content.pm.PackageManager;
 
 public class MainActivity extends Activity {
 
@@ -21,13 +24,20 @@ public class MainActivity extends Activity {
     private TextView timeLeft;
     private int durationSong;
 
+    public static final int REQUEST_CODE = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final TopMediaPlayer topMediaPlayer = new TopMediaPlayer(new MediaServer(this,R.raw.song));
+        if (!(checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
+            //File write logic here
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.REQUEST_CODE);
+
+        }
+
+        final TopMediaPlayer topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
 
         durationSong = topMediaPlayer.getDuration();
 
@@ -37,7 +47,6 @@ public class MainActivity extends Activity {
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
         timeRight.setText(millisecondToMMSS(durationSong));
-
 
         seekBar.setMax(durationSong);
 

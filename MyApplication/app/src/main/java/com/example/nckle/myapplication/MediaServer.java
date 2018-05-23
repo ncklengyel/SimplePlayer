@@ -2,28 +2,37 @@ package com.example.nckle.myapplication;
 
 import android.content.Context;
 import android.media.MediaPlayer;
-
-import com.koushikdutta.async.http.body.AsyncHttpRequestBody;
+import android.os.Environment;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
 import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
+import android.net.Uri;
 import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
+import java.util.ArrayList;
+
+import java.io.File;
+import java.util.ListIterator;
 
 public class MediaServer extends AbstractMediaComponent {
 
     private MediaPlayer mMediaPlayer;
     private AsyncHttpServer mHttpSever;
-    private int mSong;
     private Context mContext;
+    private ArrayList<Uri> mSongs;
+    private ListIterator<Uri> itr;
+    private boolean mLoop;
 
-    public MediaServer(Context pContext, final int pSong){
+    public MediaServer(Context pContext){
 
-        mSong = pSong;
+        mLoop = true; //for the moment
+        mSongs = getMusicOnDevice();
+        itr = mSongs.listIterator();
+        itr.next();
         mContext = pContext;
-        mMediaPlayer = MediaPlayer.create( pContext, pSong);
+        mMediaPlayer = MediaPlayer.create( pContext, mSongs.get(0));
         mHttpSever = new AsyncHttpServer();
 
         mHttpSever.post("/play", new HttpServerRequestCallback() {
@@ -52,6 +61,22 @@ public class MediaServer extends AbstractMediaComponent {
             }
         });
 
+        mHttpSever.post("/next", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                next();
+                response.send(buildResponse("next","ok"));
+            }
+        });
+
+        mHttpSever.post("/back", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                back();
+                response.send(buildResponse("back","ok"));
+            }
+        });
+
         Log.i("Starting Server:","Listening on 80");
         mHttpSever.listen(8080);
 
@@ -63,9 +88,31 @@ public class MediaServer extends AbstractMediaComponent {
 
     public void next(){
 
+        mMediaPlayer.stop();
+
+        if(!itr.hasNext() && mLoop) {
+            itr = mSongs.listIterator();
+            reset();
+            itr.next();
+        } else {
+            Uri nextSong = itr.next();
+            mMediaPlayer = MediaPlayer.create(mContext, nextSong);
+        }
+
+        mMediaPlayer.start();
     }
 
+    //TODO: Fix bug that back plays the same song 2 times in a row
     public void back(){
+        if(itr.hasPrevious()) {
+            mMediaPlayer.stop();
+            mMediaPlayer = MediaPlayer.create(mContext, itr.previous());
+        }else {
+            reset();
+            itr.next();
+        }
+
+        mMediaPlayer.start();
 
     }
 
@@ -107,7 +154,8 @@ public class MediaServer extends AbstractMediaComponent {
     }
 
     private void reset(){
-        mMediaPlayer = MediaPlayer.create(mContext,mSong);
+        mMediaPlayer.stop();
+        mMediaPlayer = MediaPlayer.create(mContext,mSongs.get(0));
     }
 
     private JSONObject buildResponse(String command, String value){
@@ -120,6 +168,24 @@ public class MediaServer extends AbstractMediaComponent {
         }
 
         return json;
+    }
+
+    private ArrayList<Uri> getMusicOnDevice(){
+
+        ArrayList<Uri> songs = new ArrayList<Uri>();
+        File musicFile = new File(Environment.getExternalStorageDirectory().toString() + "/Music");
+        File[] files = musicFile.listFiles();
+        for (File file : files) {
+
+
+            if (file.getName().endsWith(".mp3")){
+                songs.add(Uri.parse(file.getAbsolutePath()));
+            }
+
+        }
+
+        return songs;
+
     }
 
 }
