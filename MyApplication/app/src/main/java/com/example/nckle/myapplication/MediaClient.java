@@ -1,9 +1,16 @@
 package com.example.nckle.myapplication;
 
+import android.util.Log;
+
+import com.koushikdutta.async.http.AsyncHttpClient;
+import com.koushikdutta.async.http.AsyncHttpPost;
+import com.koushikdutta.async.http.AsyncHttpResponse;
+
 public class MediaClient extends AbstractMediaComponent {
 
     private String host;
     private int port;
+    private String url;
 
     public MediaClient(String pHost, int pPort){
 
@@ -12,15 +19,15 @@ public class MediaClient extends AbstractMediaComponent {
 
     }
     public void play(){
-
+        doPost("play");
     }
 
     public void next(){
-
+        doPost("next");
     }
 
     public void back(){
-
+        doPost("back");
     }
 
     public void shuffle(){
@@ -28,7 +35,7 @@ public class MediaClient extends AbstractMediaComponent {
     }
 
     public void stop(){
-
+        doPost("stop");
     }
 
     public void repeatOne(){
@@ -51,12 +58,27 @@ public class MediaClient extends AbstractMediaComponent {
     }
 
     public void pause(){
-
+        doPost("pause");
     }
 
 
     public boolean isPlaying(){
         return false;
+    }
+
+    private String getBaseUrl(){
+        return "http://" + host + ":" + port;
+    }
+
+    private void doPost(String command){
+        String url = getBaseUrl() + "/" + command;
+        AsyncHttpPost post = new AsyncHttpPost(url);
+        AsyncHttpClient.getDefaultInstance().executeString(post, new AsyncHttpClient.StringCallback() {
+            @Override
+            public void onCompleted(Exception e, AsyncHttpResponse source, String result) {
+                Log.i("HTTPclient", result);
+            }
+        });
     }
 
 }
