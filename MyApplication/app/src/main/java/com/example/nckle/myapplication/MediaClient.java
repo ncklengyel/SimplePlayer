@@ -58,7 +58,7 @@ public class MediaClient extends AbstractMediaComponent {
     }
 
     public void pause(){
-
+        doPost("pause");
     }
 
 
