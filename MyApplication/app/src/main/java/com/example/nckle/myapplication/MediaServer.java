@@ -20,7 +20,6 @@ public class MediaServer extends AbstractMediaComponent {
     private MediaPlayer mMediaPlayer;
     private AsyncHttpServer mHttpSever;
     private Context mContext;
-    private ArrayList<Uri> mSongs;
     private Playlist mPlayList;
 
     public MediaServer(Context pContext){
