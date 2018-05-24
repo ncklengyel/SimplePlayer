@@ -38,6 +38,10 @@ public class MainActivity extends Activity {
         }
 
         final TopMediaPlayer topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
+        /*final TopMediaPlayer topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.2.17",8080));
+        topMediaPlayer.play();
+        topMediaPlayer.next();
+        topMediaPlayer.stop();*/
 
         durationSong = topMediaPlayer.getDuration();
 
