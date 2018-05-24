@@ -12,9 +12,8 @@ import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
-
 import java.io.File;
-import java.util.ListIterator;
+
 
 public class MediaServer extends AbstractMediaComponent {
 
@@ -22,17 +21,13 @@ public class MediaServer extends AbstractMediaComponent {
     private AsyncHttpServer mHttpSever;
     private Context mContext;
     private ArrayList<Uri> mSongs;
-    private ListIterator<Uri> itr;
-    private boolean mLoop;
+    private Playlist mPlayList;
 
     public MediaServer(Context pContext){
 
-        mLoop = true; //for the moment
-        mSongs = getMusicOnDevice();
-        itr = mSongs.listIterator();
-        itr.next();
+        mPlayList = new Playlist(getMusicOnDevice());
         mContext = pContext;
-        mMediaPlayer = MediaPlayer.create( pContext, mSongs.get(0));
+        mMediaPlayer = MediaPlayer.create( pContext, mPlayList.getCurrentSong());
         mHttpSever = new AsyncHttpServer();
 
         mHttpSever.post("/play", new HttpServerRequestCallback() {
@@ -87,31 +82,14 @@ public class MediaServer extends AbstractMediaComponent {
     }
 
     public void next(){
-
         mMediaPlayer.stop();
-
-        if(!itr.hasNext() && mLoop) {
-            itr = mSongs.listIterator();
-            reset();
-            itr.next();
-        } else {
-            Uri nextSong = itr.next();
-            mMediaPlayer = MediaPlayer.create(mContext, nextSong);
-        }
-
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.next());
         mMediaPlayer.start();
     }
 
-    //TODO: Fix bug that back plays the same song 2 times in a row
     public void back(){
-        if(itr.hasPrevious()) {
-            mMediaPlayer.stop();
-            mMediaPlayer = MediaPlayer.create(mContext, itr.previous());
-        }else {
-            reset();
-            itr.next();
-        }
-
+        mMediaPlayer.stop();
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.previous());
         mMediaPlayer.start();
 
     }
@@ -155,7 +133,8 @@ public class MediaServer extends AbstractMediaComponent {
 
     private void reset(){
         mMediaPlayer.stop();
-        mMediaPlayer = MediaPlayer.create(mContext,mSongs.get(0));
+        mPlayList.reset();
+        mMediaPlayer = MediaPlayer.create(mContext,mPlayList.getCurrentSong());
     }
 
     private JSONObject buildResponse(String command, String value){
@@ -176,7 +155,6 @@ public class MediaServer extends AbstractMediaComponent {
         File musicFile = new File(Environment.getExternalStorageDirectory().toString() + "/Music");
         File[] files = musicFile.listFiles();
         for (File file : files) {
-
 
             if (file.getName().endsWith(".mp3")){
                 songs.add(Uri.parse(file.getAbsolutePath()));
