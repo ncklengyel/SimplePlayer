@@ -8,6 +8,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.Button;
 import android.os.Handler;
@@ -17,8 +18,10 @@ import android.content.pm.PackageManager;
 public class MainActivity extends Activity {
 
     //private  MediaPlayer mp;
-    private Button playButton;
-    private Button stopButton;
+    private ImageButton playButton;
+    private ImageButton nextButton;
+    private ImageButton backButton;
+    private ImageButton pauseButton;
     private SeekBar seekBar;
     private TextView timeRight;
     private TextView timeLeft;
@@ -45,8 +48,11 @@ public class MainActivity extends Activity {
 
         durationSong = topMediaPlayer.getDuration();
 
-        playButton = (Button) findViewById(R.id.playButton);
-        stopButton = (Button) findViewById(R.id.stopButton);
+        playButton = (ImageButton) findViewById(R.id.playButton);
+        nextButton = (ImageButton) findViewById(R.id.nextButton);
+        backButton = (ImageButton) findViewById(R.id.backButton);
+        pauseButton = (ImageButton) findViewById(R.id.pauseButton);
+        switchPlayButton();
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
@@ -93,33 +99,35 @@ public class MainActivity extends Activity {
                 if (!topMediaPlayer.isPlaying())
                 {
                    topMediaPlayer.play();
-                    switchPausePlayButton();
-                }else {
-                    topMediaPlayer.pause();
-                    resetPlayButton();
+                   switchPauseButton();
                 }
             }
         });
 
-
-        stopButton.setOnClickListener(new View.OnClickListener() {
+        pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                topMediaPlayer.stop();
-                resetPlayButton();
-
+                if (topMediaPlayer.isPlaying()){
+                    topMediaPlayer.pause();
+                    switchPlayButton();
+                }
             }
         });
+
     }
 
-    private void resetPlayButton() {
-        playButton.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
-        playButton.setText(getResources().getString(R.string.playButtonText));
+    private void switchPlayButton(){
+        pauseButton.setEnabled(false);
+        pauseButton.setVisibility(View.GONE);
+        playButton.setEnabled(true);
+        playButton.setVisibility(View.VISIBLE);
     }
 
-    private void switchPausePlayButton() {
-        playButton.setText("Pause");
-        playButton.setBackgroundColor(Color.BLUE);
+    private void switchPauseButton() {
+        playButton.setEnabled(false);
+        playButton.setVisibility(View.GONE);
+        pauseButton.setEnabled(true);
+        pauseButton.setVisibility(View.VISIBLE);
     }
 
     @Override

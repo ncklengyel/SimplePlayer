@@ -2,78 +2,87 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/seekBarRow"
-        android:layout_width="match_parent"
-        android:layout_height="95dp"
+
+    <TextView
+        android:id="@+id/timeLeftText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/timeRightText"
+        android:layout_marginStart="19dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="00:00" />
+
+    <SeekBar
+        android:id="@+id/seekBar"
+        android:layout_width="227dp"
+        android:layout_height="32dp"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="48dp"
-        android:orientation="horizontal">
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="164dp"
+        android:max="10"
+        android:progress="3" />
 
-
-        <TextView
-            android:id="@+id/timeLeftText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:text="00:00" />
-
-        <SeekBar
-            android:id="@+id/seekBar"
-            style="@style/Widget.AppCompat.SeekBar.Discrete"
-            android:layout_width="273dp"
-            android:layout_height="37dp"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="115dp"
-            android:max="10"
-            android:progress="3" />
-
-        <TextView
-            android:id="@+id/timeRightText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:text="10:00" />
-
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
+    <TextView
+        android:id="@+id/timeRightText"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:id="@+id/buttonRow">
+        android:layout_alignParentEnd="true"
+        android:layout_marginBottom="154dp"
+        android:layout_marginEnd="20dp"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:text="10:00" />
 
-        <Button
-            android:id="@+id/playButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
-            android:layout_weight="1"
-            android:background="@color/colorPrimary"
-            android:text="@string/playButtonText" />
+    <ImageButton
+        android:id="@+id/nextButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/backButton"
+        android:layout_marginEnd="31dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/skip_right_button" />
 
-        <Button
-            android:id="@+id/stopButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_weight="1"
-            android:background="#c70407"
-            android:text="@string/stopButtonText" />
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="36dp"
+        android:layout_marginStart="31dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/skip_left_button" />
 
+    <ImageButton
+        android:id="@+id/playButton"
+        android:layout_width="104dp"
+        android:layout_height="104dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="28dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/play_button" />
 
-
-    </LinearLayout>
+    <ImageButton
+        android:id="@+id/pauseButton"
+        android:layout_width="104dp"
+        android:layout_height="104dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="28dp"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/pause_button" />
 
 </RelativeLayout>
