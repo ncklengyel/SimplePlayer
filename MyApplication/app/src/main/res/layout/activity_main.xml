@@ -85,4 +85,34 @@
         android:scaleType="fitXY"
         android:src="@drawable/pause_button" />
 
+    <EditText
+        android:id="@+id/clientHostText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignStart="@+id/timeLeftText"
+        android:layout_centerVertical="true"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Host : port" />
+
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="168dp"
+        android:layout_height="54dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="28dp"
+        android:text="ManETS"
+        android:textAlignment="center"
+        android:textColor="@android:color/black"
+        android:textSize="36sp" />
+
+    <Switch
+        android:id="@+id/clientSwitch"
+        android:layout_width="100dp"
+        android:layout_height="54dp"
+        android:layout_alignEnd="@+id/nextButton"
+        android:layout_centerVertical="true"
+        android:text="Client" />
+
 </RelativeLayout>

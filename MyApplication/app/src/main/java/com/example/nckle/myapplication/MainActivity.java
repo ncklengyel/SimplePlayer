@@ -2,22 +2,22 @@ package com.example.nckle.myapplication;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Context;
-import android.graphics.Color;
-import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
-import android.widget.Button;
 import android.os.Handler;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.content.pm.PackageManager;
+import android.widget.CompoundButton;
+import android.app.AlertDialog;
 
 public class MainActivity extends Activity {
 
-    //private  MediaPlayer mp;
     private ImageButton playButton;
     private ImageButton nextButton;
     private ImageButton backButton;
@@ -25,7 +25,11 @@ public class MainActivity extends Activity {
     private SeekBar seekBar;
     private TextView timeRight;
     private TextView timeLeft;
+
     private int durationSong;
+    private TopMediaPlayer topMediaPlayer;
+    private Switch clientSwitch;
+    private EditText clientHostText;
 
     public static final int REQUEST_CODE = 1;
 
@@ -40,16 +44,12 @@ public class MainActivity extends Activity {
 
         }
 
-        final TopMediaPlayer topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
-        /*final TopMediaPlayer topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.2.17",8080));
-        topMediaPlayer.play();
-        topMediaPlayer.next();
-        topMediaPlayer.stop();*/
-
+        topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.1.100",8080));
+        //topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
         durationSong = topMediaPlayer.getDuration();
-
         playButton = (ImageButton) findViewById(R.id.playButton);
         nextButton = (ImageButton) findViewById(R.id.nextButton);
+        backButton = (ImageButton) findViewById(R.id.backButton);
         backButton = (ImageButton) findViewById(R.id.backButton);
         pauseButton = (ImageButton) findViewById(R.id.pauseButton);
         switchPlayButton();
@@ -57,6 +57,8 @@ public class MainActivity extends Activity {
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
         timeRight.setText(millisecondToMMSS(durationSong));
+        clientSwitch = (Switch) findViewById(R.id.clientSwitch);
+        clientHostText = (EditText) findViewById(R.id.clientHostText);
 
         seekBar.setMax(durationSong);
 
@@ -65,7 +67,6 @@ public class MainActivity extends Activity {
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
                     int currentPosition = topMediaPlayer.getCurrentPosition();
                     seekBar.setProgress(currentPosition);
                     timeLeft.setText(millisecondToMMSS(currentPosition));
@@ -114,6 +115,18 @@ public class MainActivity extends Activity {
             }
         });
 
+        clientSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                // do something, the isChecked will be
+                // true if the switch is in the On position
+                if (isChecked){
+                    switchToClient(clientHostText.getText().toString());
+                }else{
+                    switchToServer();
+                }
+            }
+        });
+
     }
 
     private void switchPlayButton(){
@@ -156,6 +169,34 @@ public class MainActivity extends Activity {
 
         return time;
 
+    }
+
+    private void switchToClient(String aHost){
+
+        String host[] = aHost.split(":");
+        String hostname = host[0];
+        int port;
+
+        try{
+             port = Integer.parseInt(host[1].trim());
+        }catch(NumberFormatException nfe){
+            Log.e("MediaClient", "Convertion string to int failed for port");
+            clientSwitch.setChecked(false);
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setMessage("Invalid port number");
+            builder.setCancelable(true);
+            builder.show();
+            return;
+        }
+
+        topMediaPlayer.release();
+        topMediaPlayer = new TopMediaPlayer(new MediaClient(hostname,port));
+    }
+
+    private void switchToServer(){
+        topMediaPlayer.release();
+        topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
     }
 
 }

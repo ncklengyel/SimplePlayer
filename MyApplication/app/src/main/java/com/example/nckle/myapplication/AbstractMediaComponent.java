@@ -14,5 +14,6 @@ public abstract class AbstractMediaComponent {
     abstract public void seekTo(int position);
     abstract public void pause();
     abstract public boolean isPlaying();
+    abstract public void release();
 
 }

@@ -70,13 +70,22 @@ public class MediaClient extends AbstractMediaComponent {
         return "http://" + host + ":" + port;
     }
 
+    public void release(){
+        
+    }
+
     private void doPost(String command){
         String url = getBaseUrl() + "/" + command;
         AsyncHttpPost post = new AsyncHttpPost(url);
         AsyncHttpClient.getDefaultInstance().executeString(post, new AsyncHttpClient.StringCallback() {
             @Override
             public void onCompleted(Exception e, AsyncHttpResponse source, String result) {
-                Log.i("HTTPclient", result);
+                if (result == null) {
+                    Log.d("MediaClient response:", "result is null");
+
+                }else{
+                    Log.d("MediaClient response:", result);
+                }
             }
         });
     }

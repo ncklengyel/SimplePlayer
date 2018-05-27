@@ -136,6 +136,11 @@ public class MediaServer extends AbstractMediaComponent {
         mMediaPlayer = MediaPlayer.create(mContext,mPlayList.getCurrentSong());
     }
 
+    public void release(){
+        mMediaPlayer.release();
+        mHttpSever.stop();
+    }
+
     private JSONObject buildResponse(String command, String value){
         JSONObject json = new JSONObject();
         try {

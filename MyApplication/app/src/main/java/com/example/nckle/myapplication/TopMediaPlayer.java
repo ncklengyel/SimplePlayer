@@ -48,5 +48,7 @@ public class TopMediaPlayer {
 
     public boolean isPlaying(){ return component.isPlaying();}
 
+    public void release(){ component.release(); }
+
 
 }
