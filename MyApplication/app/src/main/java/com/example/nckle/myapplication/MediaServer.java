@@ -9,6 +9,9 @@ import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
 import android.net.Uri;
 import android.util.Log;
+import android.widget.SeekBar;
+import android.widget.TextView;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
@@ -21,13 +24,17 @@ public class MediaServer extends AbstractMediaComponent {
     private AsyncHttpServer mHttpSever;
     private Context mContext;
     private Playlist mPlayList;
+    private SeekBar seekBar;
+    TextView timeRight, timeLeft;
 
-    public MediaServer(Context pContext){
+    public MediaServer(Context pContext, TextView aTimeLeft, TextView aTimeRight){
 
         mPlayList = new Playlist(getMusicOnDevice());
         mContext = pContext;
         mMediaPlayer = MediaPlayer.create( pContext, mPlayList.getCurrentSong());
         mHttpSever = new AsyncHttpServer();
+        timeLeft = aTimeLeft;
+        timeRight = aTimeRight;
 
         mHttpSever.post("/play", new HttpServerRequestCallback() {
             @Override
@@ -77,18 +84,21 @@ public class MediaServer extends AbstractMediaComponent {
     }
 
     public void play(){
+        updateRightLeftTime();
         mMediaPlayer.start();
     }
 
     public void next(){
         mMediaPlayer.stop();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.next());
+        updateRightLeftTime();
         mMediaPlayer.start();
     }
 
     public void back(){
         mMediaPlayer.stop();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.previous());
+        updateRightLeftTime();
         mMediaPlayer.start();
 
     }
@@ -151,6 +161,11 @@ public class MediaServer extends AbstractMediaComponent {
         }
 
         return json;
+    }
+
+    private void updateRightLeftTime(){
+        timeLeft.setText("0:00");
+        timeRight.setText(Utils.millisecondToMMSS(mMediaPlayer.getDuration()));
     }
 
     private ArrayList<Uri> getMusicOnDevice(){
