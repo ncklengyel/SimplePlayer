@@ -160,6 +160,10 @@ public class MediaServer implements AbstractMediaComponent {
         return json;
     }
 
+    public void setVolume(int level){
+
+    }
+
     //Crash the app
    /* private void updateRightLeftTime(){
         timeLeft.setText("0:00");

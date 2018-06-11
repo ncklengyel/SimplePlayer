@@ -28,4 +28,6 @@ interface AbstractMediaComponent {
 
     void release();
 
+    void setVolume(int level);
+
 }

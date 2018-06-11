@@ -10,6 +10,8 @@ public class TopMediaPlayer implements AbstractMediaComponent{
 
     }
 
+    public void setVolume(int level){ component.setVolume(level);}
+
     public void play(){
         component.play();
     }

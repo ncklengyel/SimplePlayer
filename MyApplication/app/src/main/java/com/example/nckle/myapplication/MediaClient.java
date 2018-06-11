@@ -74,6 +74,10 @@ public class MediaClient implements AbstractMediaComponent {
         
     }
 
+    public void setVolume(int level){
+
+    }
+
     private void doPost(String command){
         String url = getBaseUrl() + "/" + command;
         AsyncHttpPost post = new AsyncHttpPost(url);
