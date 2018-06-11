@@ -25,8 +25,6 @@ public class MainActivity extends Activity {
     private SeekBar seekBar;
     private TextView timeRight;
     private TextView timeLeft;
-
-    private int durationSong;
     private TopMediaPlayer topMediaPlayer;
     private Switch clientSwitch;
     private EditText clientHostText;
@@ -44,9 +42,10 @@ public class MainActivity extends Activity {
 
         }
 
+        //TODO We start as client for test purposes (We might what to start as server later on)
         topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.1.100",8080));
+
         //topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
-        durationSong = topMediaPlayer.getDuration();
         playButton = (ImageButton) findViewById(R.id.playButton);
         nextButton = (ImageButton) findViewById(R.id.nextButton);
         backButton = (ImageButton) findViewById(R.id.backButton);
@@ -56,11 +55,8 @@ public class MainActivity extends Activity {
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
-        timeRight.setText(millisecondToMMSS(durationSong));
         clientSwitch = (Switch) findViewById(R.id.clientSwitch);
         clientHostText = (EditText) findViewById(R.id.clientHostText);
-
-        seekBar.setMax(durationSong);
 
         final Handler handler = new Handler();
 
@@ -69,7 +65,7 @@ public class MainActivity extends Activity {
             public void run() {
                     int currentPosition = topMediaPlayer.getCurrentPosition();
                     seekBar.setProgress(currentPosition);
-                    timeLeft.setText(millisecondToMMSS(currentPosition));
+                    timeLeft.setText(Utils.millisecondToMMSS(currentPosition));
 
                 handler.postDelayed(this, 1000);
             }
@@ -108,10 +104,25 @@ public class MainActivity extends Activity {
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (topMediaPlayer.isPlaying()){
-                    topMediaPlayer.pause();
-                    switchPlayButton();
-                }
+                topMediaPlayer.pause();
+                switchPlayButton();
+            }
+        });
+
+        nextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topMediaPlayer.next();
+                switchPauseButton();
+            }
+        });
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topMediaPlayer.back();
+                switchPauseButton();
+                seekBar.setMax(topMediaPlayer.getDuration());
             }
         });
 
@@ -124,6 +135,8 @@ public class MainActivity extends Activity {
                 }else{
                     switchToServer();
                 }
+
+                switchPlayButton();
             }
         });
 
@@ -146,30 +159,9 @@ public class MainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        //release mediaplayer
+        topMediaPlayer.release();
     }
 
-    /**
-     * Function that converts a time in milliseconds to a string mm:ss formated
-     * @param ms milliseconds to convert to format mm:ss
-     * @return returns a String in mm:ss format
-     */
-    private String millisecondToMMSS(int ms){
-
-        int seconds = (ms/1000) % 60;
-        int minutes = (ms/1000) / 60;
-        String time = "0:00";
-
-        //Condition to have 0:00 format and not 0:0 when seconds are <10
-        if (seconds<10){
-            time = Integer.toString(minutes) + ":0" + Integer.toString(seconds);
-        } else {
-            time = Integer.toString(minutes) + ":" + Integer.toString(seconds);
-        }
-
-        return time;
-
-    }
 
     private void switchToClient(String aHost){
 
@@ -196,7 +188,8 @@ public class MainActivity extends Activity {
 
     private void switchToServer(){
         topMediaPlayer.release();
-        topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
+        topMediaPlayer = new TopMediaPlayer(new MediaServer(this, timeLeft, timeRight));
+        switchPlayButton();
     }
 
 }
