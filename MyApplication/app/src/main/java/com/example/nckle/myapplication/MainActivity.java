@@ -51,7 +51,6 @@ public class MainActivity extends Activity {
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton = (ImageButton) findViewById(R.id.backButton);
         pauseButton = (ImageButton) findViewById(R.id.pauseButton);
-        switchPlayButton();
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
@@ -69,7 +68,13 @@ public class MainActivity extends Activity {
                     seekBar.setProgress(currentPosition);
                     timeLeft.setText(Utils.millisecondToMMSS(currentPosition));
 
-                handler.postDelayed(this, 1000);
+                if (topMediaPlayer.isPlaying()) {
+                    switchPauseButton();
+                }else{
+                    switchPlayButton();
+                }
+
+                handler.postDelayed(this, 500);
             }
         });
 
@@ -138,7 +143,6 @@ public class MainActivity extends Activity {
                     switchToServer();
                 }
 
-                switchPlayButton();
             }
         });
 
@@ -191,7 +195,6 @@ public class MainActivity extends Activity {
     private void switchToServer(){
         topMediaPlayer.release();
         topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
-        switchPlayButton();
     }
 
 }
