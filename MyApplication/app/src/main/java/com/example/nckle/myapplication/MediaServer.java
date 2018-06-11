@@ -25,16 +25,16 @@ public class MediaServer implements AbstractMediaComponent {
     private Context mContext;
     private Playlist mPlayList;
     private SeekBar seekBar;
-    TextView timeRight, timeLeft;
+    //TextView timeRight, timeLeft;
 
-    public MediaServer(Context pContext, TextView aTimeLeft, TextView aTimeRight){
+    public MediaServer(Context pContext){
 
         mPlayList = new Playlist(getMusicOnDevice());
         mContext = pContext;
         mMediaPlayer = MediaPlayer.create( pContext, mPlayList.getCurrentSong());
         mHttpSever = new AsyncHttpServer();
-        timeLeft = aTimeLeft;
-        timeRight = aTimeRight;
+        /*timeLeft = aTimeLeft;
+        timeRight = aTimeRight;*/
 
         mHttpSever.post("/play", new HttpServerRequestCallback() {
             @Override
@@ -84,21 +84,18 @@ public class MediaServer implements AbstractMediaComponent {
     }
 
     public void play(){
-        updateRightLeftTime();
         mMediaPlayer.start();
     }
 
     public void next(){
         mMediaPlayer.stop();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.next());
-        updateRightLeftTime();
         mMediaPlayer.start();
     }
 
     public void back(){
         mMediaPlayer.stop();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.previous());
-        updateRightLeftTime();
         mMediaPlayer.start();
 
     }
@@ -163,10 +160,11 @@ public class MediaServer implements AbstractMediaComponent {
         return json;
     }
 
-    private void updateRightLeftTime(){
+    //Crash the app
+   /* private void updateRightLeftTime(){
         timeLeft.setText("0:00");
         timeRight.setText(Utils.millisecondToMMSS(mMediaPlayer.getDuration()));
-    }
+    }*/
 
     private ArrayList<Uri> getMusicOnDevice(){
 

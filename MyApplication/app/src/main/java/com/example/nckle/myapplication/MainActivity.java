@@ -43,7 +43,7 @@ public class MainActivity extends Activity {
         }
 
         //TODO We start as client for test purposes (We might what to start as server later on)
-        topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.1.100",8080));
+        //topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.1.100",8080));
 
         //topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
         playButton = (ImageButton) findViewById(R.id.playButton);
@@ -57,6 +57,8 @@ public class MainActivity extends Activity {
         timeRight = (TextView) findViewById(R.id.timeRightText);
         clientSwitch = (Switch) findViewById(R.id.clientSwitch);
         clientHostText = (EditText) findViewById(R.id.clientHostText);
+
+        topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
 
         final Handler handler = new Handler();
 
@@ -188,7 +190,7 @@ public class MainActivity extends Activity {
 
     private void switchToServer(){
         topMediaPlayer.release();
-        topMediaPlayer = new TopMediaPlayer(new MediaServer(this, timeLeft, timeRight));
+        topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
         switchPlayButton();
     }
 
