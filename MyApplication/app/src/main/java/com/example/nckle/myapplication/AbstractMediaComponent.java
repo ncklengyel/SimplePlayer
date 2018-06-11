@@ -1,6 +1,6 @@
 package com.example.nckle.myapplication;
 
-public abstract class AbstractMediaComponent {
+public interface AbstractMediaComponent {
 
     abstract public void play();
     abstract public void next();

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.io.File;
 
 
-public class MediaServer extends AbstractMediaComponent {
+public class MediaServer implements AbstractMediaComponent {
 
     private MediaPlayer mMediaPlayer;
     private AsyncHttpServer mHttpSever;

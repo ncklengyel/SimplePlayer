@@ -1,6 +1,6 @@
 package com.example.nckle.myapplication;
 
-public class TopMediaPlayer {
+public class TopMediaPlayer implements AbstractMediaComponent{
 
     public AbstractMediaComponent component;
 

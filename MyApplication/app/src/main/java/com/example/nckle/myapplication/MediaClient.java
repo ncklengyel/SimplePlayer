@@ -6,7 +6,7 @@ import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpPost;
 import com.koushikdutta.async.http.AsyncHttpResponse;
 
-public class MediaClient extends AbstractMediaComponent {
+public class MediaClient implements AbstractMediaComponent {
 
     private String host;
     private int port;
