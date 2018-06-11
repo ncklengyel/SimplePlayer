@@ -1,19 +1,31 @@
 package com.example.nckle.myapplication;
 
-public interface AbstractMediaComponent {
+interface AbstractMediaComponent {
 
-    abstract public void play();
-    abstract public void next();
-    abstract public void back();
-    abstract public void shuffle();
-    abstract public void stop();
-    abstract public void repeatOne();
-    abstract public void repeatAll();
-    abstract public int getCurrentPosition();
-    abstract public int getDuration();
-    abstract public void seekTo(int position);
-    abstract public void pause();
-    abstract public boolean isPlaying();
-    abstract public void release();
+    void play();
+
+    void next();
+
+    void back();
+
+    void shuffle();
+
+    void stop();
+
+    void repeatOne();
+
+    void repeatAll();
+
+    int getCurrentPosition();
+
+    int getDuration();
+
+    void seekTo(int position);
+
+    void pause();
+
+    boolean isPlaying();
+
+    void release();
 
 }
