@@ -6,11 +6,18 @@ import android.util.Log;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpPost;
 import com.koushikdutta.async.http.AsyncHttpResponse;
+import com.koushikdutta.async.parser.JSONObjectParser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import static com.example.nckle.myapplication.Utils.convertJSONtoBitmap;
 
 public class MediaClient implements AbstractMediaComponent {
 
     private String mHost;
     private int mPort;
+    private Song mSong;
 
     public MediaClient(String pHost){
         String[] hostParams = pHost.split(":");
@@ -19,6 +26,7 @@ public class MediaClient implements AbstractMediaComponent {
 
         mHost = host;
         mPort = port;
+        doPost("song");
     }
     public void play(){
         doPost("play");
@@ -63,29 +71,36 @@ public class MediaClient implements AbstractMediaComponent {
         doPost("pause");
     }
 
-    // TODO implement client side getTitle
     public String getTitle() {
-        return "NEEDS TO BE DONE";
+        if (mSong != null) {
+            return mSong.getTitle();
+        }
+        return "NO SONG";
     }
 
-    // TODO implement client side getAuthor
     public String getAuthor() {
-        return "NEEDS TO BE DONE";
+        if (mSong != null) {
+            return mSong.getArtist();
+        }
+        return "NO SONG";
     }
 
-    // TODO implement client side getAlbum
     public String getAlbum() {
-        return "NEEDS TO BE DONE";
+        if (mSong != null) {
+            return mSong.getAlbum();
+        }
+        return "NO SONG";
     }
 
-    // TODO implement client side getAlbumImage
     public Bitmap getAlbumImage() {
+        if (mSong != null) {
+            return mSong.getAlbumImage();
+        }
         return null;
     }
 
-    // TODO implement client side getSong
     public Song getSong() {
-        return null;
+        return mSong;
     }
 
     public boolean isPlaying(){
@@ -104,7 +119,7 @@ public class MediaClient implements AbstractMediaComponent {
 
     }
 
-    private void doPost(String command){
+    private void doPost(final String command){
         String url = getBaseUrl() + "/" + command;
         AsyncHttpPost post = new AsyncHttpPost(url);
         AsyncHttpClient.getDefaultInstance().executeString(post, new AsyncHttpClient.StringCallback() {
@@ -115,6 +130,20 @@ public class MediaClient implements AbstractMediaComponent {
 
                 }else{
                     Log.d("MediaClient response:", result);
+                    try {
+                        JSONObject response = new JSONObject(result);
+                        JSONObject song = new JSONObject((String)response.get(command));
+                        mSong = new Song(
+                                song.get("title").toString(),
+                                song.get("artist").toString(),
+                                song.get("album").toString(),
+                                song.get("length").toString(),
+                                convertJSONtoBitmap(song.get("albumImage").toString())
+                        );
+                    } catch (JSONException jsonE) {
+                        // TODO do something
+                    }
+//                    mSong = result;
                 }
             }
         });

@@ -1,5 +1,9 @@
 package com.example.nckle.myapplication;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.util.Base64;
+
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
@@ -31,5 +35,11 @@ public class Utils {
             return ThreadLocalRandom.current().nextInt(0, maximum);
         }
         return 0;
+    }
+
+    public static Bitmap convertJSONtoBitmap(String stringPicture) {
+        byte[] decodedString = Base64.decode(stringPicture, Base64.DEFAULT);
+        Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        return decodedByte;
     }
 }

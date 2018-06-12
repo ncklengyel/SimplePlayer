@@ -4,6 +4,13 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
+import android.util.Base64;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.ByteArrayOutputStream;
 
 public class Song {
 
@@ -15,11 +22,17 @@ public class Song {
     private Bitmap albumImage;
 
     public String getTitle() {
-        return title;
+        if (title != null) {
+            return title;
+        }
+        return "";
     }
 
     public String getArtist() {
-        return artist;
+        if (artist != null) {
+            return artist;
+        }
+        return "";
     }
 
     public Uri getPath() {
@@ -27,15 +40,48 @@ public class Song {
     }
 
     public String getAlbum() {
-        return album;
+        if (album != null) {
+            return album;
+        }
+        return "";
     }
 
     public String getLength() {
-        return length;
+        if (length != null) {
+            return length;
+        }
+        return "0";
     }
 
     public Bitmap getAlbumImage() {
         return albumImage;
+    }
+
+    public String getAlbumImageJSON() {
+        if (albumImage != null) {
+            final int COMPRESSION_QUALITY = 100;
+            String encodedAlbumImage;
+            ByteArrayOutputStream byteArrayBitmapStream = new ByteArrayOutputStream();
+            albumImage.compress(Bitmap.CompressFormat.JPEG, COMPRESSION_QUALITY, byteArrayBitmapStream);
+            byte[] b = byteArrayBitmapStream.toByteArray();
+            encodedAlbumImage = Base64.encodeToString(b, Base64.DEFAULT);
+            return encodedAlbumImage;
+        }
+        return null;
+    }
+
+    public String getJSON() {
+        JSONObject json = new JSONObject();
+        try {
+            json.put("title", getTitle());
+            json.put("artist", getArtist());
+            json.put("length", getLength());
+            json.put("album", getAlbum());
+            json.put("albumImage", getAlbumImageJSON());
+        } catch (JSONException jsonE) {
+            // TODO handle this exception
+        }
+        return json.toString();
     }
 
     public Song(
@@ -53,6 +99,20 @@ public class Song {
         artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
         album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
         length = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
+    }
+
+    public Song(
+            String pTitle,
+            String pArtist,
+            String pAlbum,
+            String pLength,
+            Bitmap palbumImage
+    ){
+        title = pTitle;
+        artist = pArtist;
+        album = pAlbum;
+        length = pLength;
+        albumImage = palbumImage;
     }
 
 }

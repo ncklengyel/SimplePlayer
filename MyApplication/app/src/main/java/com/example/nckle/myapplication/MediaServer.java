@@ -43,7 +43,7 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 //AsyncHttpRequestBody<String> body = request.getBody();
-                response.send(buildResponse("play","ok"));
+                response.send(buildResponse("play", mPlayList.getCurrentSong().getJSON()));
                 play();
             }
         });
@@ -53,7 +53,14 @@ public class MediaServer implements AbstractMediaComponent {
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                stop();
                reset();
-               response.send(buildResponse("stop","ok"));
+               response.send(buildResponse("stop", mPlayList.getCurrentSong().getJSON()));
+            }
+        });
+
+        mHttpSever.post("/song", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                response.send(buildResponse("song", mPlayList.getCurrentSong().getJSON()));
             }
         });
 
@@ -61,7 +68,7 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 pause();
-                response.send(buildResponse("pause","ok"));
+                response.send(buildResponse("pause", mPlayList.getCurrentSong().getJSON()));
             }
         });
 
@@ -69,7 +76,7 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 next();
-                response.send(buildResponse("next","ok"));
+                response.send(buildResponse("next", mPlayList.getCurrentSong().getJSON()));
             }
         });
 
@@ -77,15 +84,16 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 previous();
-                response.send(buildResponse("previous","ok"));
+                response.send(buildResponse("previous", mPlayList.getCurrentSong().getJSON()));
             }
         });
 
+        // TODO should return a boolean
         mHttpSever.post("/shuffle", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 shuffle();
-                response.send(buildResponse("shuffle","ok"));
+                response.send(buildResponse("shuffle", mPlayList.getCurrentSong().getJSON()));
             }
         });
 
