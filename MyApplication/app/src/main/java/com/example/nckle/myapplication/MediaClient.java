@@ -1,5 +1,6 @@
 package com.example.nckle.myapplication;
 
+import android.graphics.Bitmap;
 import android.util.Log;
 
 import com.koushikdutta.async.http.AsyncHttpClient;
@@ -27,8 +28,8 @@ public class MediaClient implements AbstractMediaComponent {
         doPost("next");
     }
 
-    public void back(){
-        doPost("back");
+    public void previous(){
+        doPost("previous");
     }
 
     public void shuffle(){
@@ -67,11 +68,25 @@ public class MediaClient implements AbstractMediaComponent {
         return "NEEDS TO BE DONE";
     }
 
-    // TODO implement client side getTitle
+    // TODO implement client side getAuthor
     public String getAuthor() {
         return "NEEDS TO BE DONE";
     }
 
+    // TODO implement client side getAlbum
+    public String getAlbum() {
+        return "NEEDS TO BE DONE";
+    }
+
+    // TODO implement client side getAlbumImage
+    public Bitmap getAlbumImage() {
+        return null;
+    }
+
+    // TODO implement client side getSong
+    public Song getSong() {
+        return null;
+    }
 
     public boolean isPlaying(){
         return false;

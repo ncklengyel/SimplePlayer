@@ -1,5 +1,7 @@
 package com.example.nckle.myapplication;
 
+import android.graphics.Bitmap;
+
 public class TopMediaPlayer implements AbstractMediaComponent{
 
     public AbstractMediaComponent component;
@@ -20,8 +22,8 @@ public class TopMediaPlayer implements AbstractMediaComponent{
         component.next();
     }
 
-    public void back(){
-        component.back();
+    public void previous(){
+        component.previous();
     }
 
     public void shuffle(){
@@ -55,6 +57,12 @@ public class TopMediaPlayer implements AbstractMediaComponent{
     public String getTitle(){ return component.getTitle(); }
 
     public String getAuthor(){ return component.getAuthor(); }
+
+    public String getAlbum(){ return component.getAlbum(); }
+
+    public Song getSong(){ return component.getSong(); }
+
+    public Bitmap getAlbumImage(){ return component.getAlbumImage(); }
 
 
 }

@@ -1,6 +1,7 @@
 package com.example.nckle.myapplication;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Environment;
@@ -10,8 +11,6 @@ import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.SeekBar;
-import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -32,7 +31,7 @@ public class MediaServer implements AbstractMediaComponent {
         mPlayList = new Playlist(getMusicOnDevice());
         mContext = pContext;
         if (mPlayList.getCurrentSong() != null) {
-            mMediaPlayer = MediaPlayer.create(pContext, mPlayList.getCurrentSong().getSongUri());
+            mMediaPlayer = MediaPlayer.create(pContext, mPlayList.getCurrentSong().getPath());
         } else {
             mMediaPlayer = new MediaPlayer();
         }
@@ -74,11 +73,11 @@ public class MediaServer implements AbstractMediaComponent {
             }
         });
 
-        mHttpSever.post("/back", new HttpServerRequestCallback() {
+        mHttpSever.post("/previous", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-                back();
-                response.send(buildResponse("back","ok"));
+                previous();
+                response.send(buildResponse("previous","ok"));
             }
         });
 
@@ -90,7 +89,7 @@ public class MediaServer implements AbstractMediaComponent {
             }
         });
 
-        Log.i("Starting Server:","Listening on 80");
+        Log.i("Starting Server:","Listening on 8080");
         mHttpSever.listen(8080);
 
     }
@@ -102,14 +101,14 @@ public class MediaServer implements AbstractMediaComponent {
     public void next(){
         mMediaPlayer.stop();
         mPlayList.next();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getSongUri());
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
         mMediaPlayer.start();
     }
 
-    public void back(){
+    public void previous(){
         mMediaPlayer.stop();
         mPlayList.previous();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getSongUri());
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
         mMediaPlayer.start();
 
     }
@@ -117,7 +116,7 @@ public class MediaServer implements AbstractMediaComponent {
     public void shuffle(){
         mMediaPlayer.stop();
         mPlayList.shuffle();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getSongUri());
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
         mMediaPlayer.start();
     }
 
@@ -157,7 +156,7 @@ public class MediaServer implements AbstractMediaComponent {
     private void reset(){
         mMediaPlayer.stop();
         mPlayList.reset();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getSongUri());
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
     }
 
     public void release(){
@@ -169,14 +168,32 @@ public class MediaServer implements AbstractMediaComponent {
         if (mPlayList.getCurrentSong() != null) {
             return mPlayList.getCurrentSong().getTitle();
         }
-        return "NO TITLE";
+        return "NO SONG";
     }
 
     public String getAuthor() {
         if (mPlayList.getCurrentSong() != null) {
-            return mPlayList.getCurrentSong().getAuthor();
+            return mPlayList.getCurrentSong().getArtist();
         }
-        return "NO AUTHOR";
+        return "NO SONG";
+    }
+
+    public String getAlbum() {
+        if (mPlayList.getCurrentSong() != null) {
+            return mPlayList.getCurrentSong().getAlbum();
+        }
+        return "NO SONG";
+    }
+
+    public Song getSong() {
+        return mPlayList.getCurrentSong();
+    }
+
+    public Bitmap getAlbumImage() {
+        if (mPlayList.getCurrentSong() != null) {
+            return mPlayList.getCurrentSong().getAlbumImage();
+        }
+        return null;
     }
 
     private JSONObject buildResponse(String command, String value){
@@ -213,9 +230,8 @@ public class MediaServer implements AbstractMediaComponent {
             if (file.getName().endsWith(".mp3")){
                 mmr.setDataSource(file.getAbsolutePath());
                 Song newSong = new Song(
-                        Uri.parse(file.getAbsolutePath()),
-                        mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
-                        mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
+                    Uri.parse(file.getAbsolutePath()),
+                    mmr
                 );
                 songs.add(newSong);
             }

@@ -1,35 +1,58 @@
 package com.example.nckle.myapplication;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
 import android.net.Uri;
-
-import java.util.ArrayList;
 
 public class Song {
 
-    private Uri songUri;
+    private Uri path;
     private String title;
+    private String artist;
+    private String album;
+    private String length;
+    private Bitmap albumImage;
 
     public String getTitle() {
         return title;
     }
 
-    public String getAuthor() {
-        return author;
+    public String getArtist() {
+        return artist;
     }
 
-    private String author;
-    public Uri getSongUri() {
-        return songUri;
+    public Uri getPath() {
+        return path;
+    }
+
+    public String getAlbum() {
+        return album;
+    }
+
+    public String getLength() {
+        return length;
+    }
+
+    public Bitmap getAlbumImage() {
+        return albumImage;
     }
 
     public Song(
-            Uri pSongUri,
-            String pTitle,
-            String pAuthor
+            Uri pPath,
+            MediaMetadataRetriever mmr
     ){
-        songUri = pSongUri;
-        title = pTitle;
-        author = pAuthor;
+        try {
+            byte[] imageBytes = mmr.getEmbeddedPicture();
+            albumImage = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.length);
+        } catch (Exception e) {
+            albumImage = Bitmap.createBitmap(200, 200, Bitmap.Config.ARGB_8888);
+        }
+        path = pPath;
+        title = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        artist = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST);
+        album = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUM);
+        length = mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_DURATION);
     }
 
 }

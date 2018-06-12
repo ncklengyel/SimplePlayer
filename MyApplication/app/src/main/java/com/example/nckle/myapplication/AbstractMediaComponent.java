@@ -1,12 +1,14 @@
 package com.example.nckle.myapplication;
 
+import android.graphics.Bitmap;
+
 interface AbstractMediaComponent {
 
     void play();
 
     void next();
 
-    void back();
+    void previous();
 
     void shuffle();
 
@@ -33,5 +35,11 @@ interface AbstractMediaComponent {
     String getTitle();
 
     String getAuthor();
+
+    String getAlbum();
+
+    Bitmap getAlbumImage();
+
+    Song getSong();
 
 }

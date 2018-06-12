@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.os.Handler;
 import android.widget.Switch;
@@ -31,6 +32,8 @@ public class MainActivity extends Activity {
     private EditText clientHostText;
     private TextView lblTitle;
     private TextView lblAuthor;
+    private TextView lblAlbum;
+    private ImageView imgAlbumArt;
 
     public static final int REQUEST_CODE = 1;
 
@@ -57,6 +60,8 @@ public class MainActivity extends Activity {
         clientHostText = (EditText) findViewById(R.id.clientHostText);
         lblTitle = (TextView) findViewById(R.id.lblTitle);
         lblAuthor = (TextView) findViewById(R.id.lblAuthor);
+        lblAlbum = (TextView) findViewById(R.id.lblAlbum);
+        imgAlbumArt = (ImageView) findViewById(R.id.imgAlbumArt);
 
         topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
 
@@ -65,15 +70,17 @@ public class MainActivity extends Activity {
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                    int currentPosition = topMediaPlayer.getCurrentPosition();
-                    seekBar.setProgress(currentPosition);
-                    timeLeft.setText(Utils.millisecondToMMSS(currentPosition));
-                    lblTitle.setText(topMediaPlayer.getTitle());
-                    lblAuthor.setText(topMediaPlayer.getAuthor());
+                int currentPosition = topMediaPlayer.getCurrentPosition();
+                seekBar.setProgress(currentPosition);
+                timeLeft.setText(Utils.millisecondToMMSS(currentPosition));
+                lblTitle.setText(topMediaPlayer.getTitle());
+                lblAuthor.setText(topMediaPlayer.getAuthor());
+                lblAlbum.setText(topMediaPlayer.getAlbum());
+                imgAlbumArt.setImageBitmap(topMediaPlayer.getAlbumImage());
 
                 if (topMediaPlayer.isPlaying()) {
                     switchPauseButton();
-                }else{
+                } else {
                     switchPlayButton();
                 }
 
@@ -84,7 +91,7 @@ public class MainActivity extends Activity {
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                if(fromUser){
+                if (fromUser) {
                     topMediaPlayer.seekTo(progress);
                 }
             }
@@ -103,10 +110,9 @@ public class MainActivity extends Activity {
         playButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!topMediaPlayer.isPlaying())
-                {
-                   topMediaPlayer.play();
-                   switchPauseButton();
+                if (!topMediaPlayer.isPlaying()) {
+                    topMediaPlayer.play();
+                    switchPauseButton();
                 }
             }
         });
@@ -117,8 +123,8 @@ public class MainActivity extends Activity {
                 // TODO bring back this if
 //                if (topMediaPlayer.isPlaying())
 //                {
-                    topMediaPlayer.pause();
-                    switchPlayButton();
+                topMediaPlayer.pause();
+                switchPlayButton();
 //                }
             }
         });
@@ -140,7 +146,7 @@ public class MainActivity extends Activity {
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                topMediaPlayer.back();
+                topMediaPlayer.previous();
                 switchPauseButton();
                 seekBar.setMax(topMediaPlayer.getDuration());
             }
@@ -150,9 +156,9 @@ public class MainActivity extends Activity {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // do something, the isChecked will be
                 // true if the switch is in the On position
-                if (isChecked){
+                if (isChecked) {
                     switchToClient(clientHostText.getText().toString());
-                }else{
+                } else {
                     switchToServer();
                 }
 
@@ -161,7 +167,7 @@ public class MainActivity extends Activity {
 
     }
 
-    private void switchPlayButton(){
+    private void switchPlayButton() {
 //        pauseButton.setEnabled(false);
 //        pauseButton.setVisibility(View.GONE);
 //        playButton.setEnabled(true);
@@ -182,12 +188,12 @@ public class MainActivity extends Activity {
     }
 
 
-    private void switchToClient(String aHost){
+    private void switchToClient(String aHost) {
         topMediaPlayer.release();
         topMediaPlayer = new TopMediaPlayer(new MediaClient(aHost));
     }
 
-    private void switchToServer(){
+    private void switchToServer() {
         topMediaPlayer.release();
         topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
     }
