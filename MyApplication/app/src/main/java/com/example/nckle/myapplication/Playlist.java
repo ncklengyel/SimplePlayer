@@ -3,7 +3,6 @@ package com.example.nckle.myapplication;
 import android.net.Uri;
 
 import java.util.ArrayList;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Playlist {
 
@@ -20,43 +19,34 @@ public class Playlist {
         lastIndex = songs.size() - 1;
     }
 
-    public void next(){
+    // TODO maybe check if it's the right thing to return the uri
+    public Uri next(){
 
         currentIndex++;
 
         if (currentIndex > lastIndex)
             reset();
 
+        return songs.get(currentIndex).getSongUri();
+
     }
 
-    public void previous(){
+    // TODO maybe check if it's the right thing to return the uri
+    public Uri previous(){
 
         currentIndex--;
 
-        if (currentIndex < firstIndex) {
+        if (currentIndex < firstIndex)
             reset();
-        }
-    }
 
-    public void shuffle(){
-        int numberOfSongs = getNumberOfSongs();
-        if (numberOfSongs != 0) {
-            currentIndex = ThreadLocalRandom.current().nextInt(0, getNumberOfSongs());
-        }
+        return songs.get(currentIndex).getSongUri();
     }
 
     public Song getCurrentSong(){
-        if (getNumberOfSongs() != 0) {
+        if (songs.size() != 0) {
             return songs.get(currentIndex);
         }
         return null;
-    }
-
-    public int getNumberOfSongs(){
-        if (songs != null) {
-            return songs.size();
-        }
-        return 0;
     }
 
     public void reset(){
