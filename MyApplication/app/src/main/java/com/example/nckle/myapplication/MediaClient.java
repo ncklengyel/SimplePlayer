@@ -61,6 +61,16 @@ public class MediaClient implements AbstractMediaComponent {
         doPost("pause");
     }
 
+    // TODO implement client side getTitle
+    public String getTitle() {
+        return "NEEDS TO BE DONE";
+    }
+
+    // TODO implement client side getTitle
+    public String getAuthor() {
+        return "NEEDS TO BE DONE";
+    }
+
 
     public boolean isPlaying(){
         return false;

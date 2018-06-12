@@ -28,6 +28,8 @@ public class MainActivity extends Activity {
     private TopMediaPlayer topMediaPlayer;
     private Switch clientSwitch;
     private EditText clientHostText;
+    private TextView lblTitle;
+    private TextView lblAuthor;
 
     public static final int REQUEST_CODE = 1;
 
@@ -56,6 +58,8 @@ public class MainActivity extends Activity {
         timeRight = (TextView) findViewById(R.id.timeRightText);
         clientSwitch = (Switch) findViewById(R.id.clientSwitch);
         clientHostText = (EditText) findViewById(R.id.clientHostText);
+        lblTitle = (TextView) findViewById(R.id.lblTitle);
+        lblAuthor = (TextView) findViewById(R.id.lblAuthor);
 
         topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
 
@@ -67,6 +71,8 @@ public class MainActivity extends Activity {
                     int currentPosition = topMediaPlayer.getCurrentPosition();
                     seekBar.setProgress(currentPosition);
                     timeLeft.setText(Utils.millisecondToMMSS(currentPosition));
+                    lblTitle.setText(topMediaPlayer.getTitle());
+                    lblAuthor.setText(topMediaPlayer.getAuthor());
 
                 if (topMediaPlayer.isPlaying()) {
                     switchPauseButton();
@@ -111,8 +117,12 @@ public class MainActivity extends Activity {
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                topMediaPlayer.pause();
-                switchPlayButton();
+                // TODO bring back this if
+//                if (topMediaPlayer.isPlaying())
+//                {
+                    topMediaPlayer.pause();
+                    switchPlayButton();
+//                }
             }
         });
 
@@ -149,17 +159,17 @@ public class MainActivity extends Activity {
     }
 
     private void switchPlayButton(){
-        pauseButton.setEnabled(false);
-        pauseButton.setVisibility(View.GONE);
-        playButton.setEnabled(true);
-        playButton.setVisibility(View.VISIBLE);
+//        pauseButton.setEnabled(false);
+//        pauseButton.setVisibility(View.GONE);
+//        playButton.setEnabled(true);
+//        playButton.setVisibility(View.VISIBLE);
     }
 
     private void switchPauseButton() {
-        playButton.setEnabled(false);
-        playButton.setVisibility(View.GONE);
-        pauseButton.setEnabled(true);
-        pauseButton.setVisibility(View.VISIBLE);
+//        playButton.setEnabled(false);
+//        playButton.setVisibility(View.GONE);
+//        pauseButton.setEnabled(true);
+//        pauseButton.setVisibility(View.VISIBLE);
     }
 
     @Override

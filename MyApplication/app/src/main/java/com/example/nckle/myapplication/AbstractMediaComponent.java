@@ -30,4 +30,8 @@ interface AbstractMediaComponent {
 
     void setVolume(int level);
 
+    String getTitle();
+
+    String getAuthor();
+
 }

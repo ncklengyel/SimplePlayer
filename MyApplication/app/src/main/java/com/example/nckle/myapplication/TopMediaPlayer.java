@@ -52,5 +52,9 @@ public class TopMediaPlayer implements AbstractMediaComponent{
 
     public void release(){ component.release(); }
 
+    public String getTitle(){ return component.getTitle(); }
+
+    public String getAuthor(){ return component.getAuthor(); }
+
 
 }
