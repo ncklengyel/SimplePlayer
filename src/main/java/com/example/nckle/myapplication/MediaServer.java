@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
 import java.io.File;
+import java.util.concurrent.ThreadLocalRandom;
 
 
 public class MediaServer implements AbstractMediaComponent {
@@ -74,6 +75,14 @@ public class MediaServer implements AbstractMediaComponent {
             }
         });
 
+        mHttpSever.post("/shuffle", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                shuffle();
+                response.send(buildResponse("shuffle","ok"));
+            }
+        });
+
         mHttpSever.post("/back", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
@@ -93,19 +102,24 @@ public class MediaServer implements AbstractMediaComponent {
 
     public void next(){
         mMediaPlayer.stop();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.next());
+        mPlayList.next();
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getSongUri());
         mMediaPlayer.start();
     }
 
     public void back(){
         mMediaPlayer.stop();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.previous());
+        mPlayList.previous();
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getSongUri());
         mMediaPlayer.start();
 
     }
 
     public void shuffle(){
-
+        mMediaPlayer.stop();
+        mPlayList.shuffle();
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getSongUri());
+        mMediaPlayer.start();
     }
 
     public void stop(){
@@ -153,11 +167,17 @@ public class MediaServer implements AbstractMediaComponent {
     }
 
     public String getTitle() {
-        return mPlayList.getCurrentSong().getTitle();
+        if (mPlayList.getCurrentSong() != null) {
+            return mPlayList.getCurrentSong().getTitle();
+        }
+        return "NO TITLE";
     }
 
     public String getAuthor() {
-        return mPlayList.getCurrentSong().getAuthor();
+        if (mPlayList.getCurrentSong() != null) {
+            return mPlayList.getCurrentSong().getAuthor();
+        }
+        return "NO AUTHOR";
     }
 
     private JSONObject buildResponse(String command, String value){
