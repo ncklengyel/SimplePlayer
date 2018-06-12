@@ -1,6 +1,5 @@
 package com.example.nckle.myapplication;
 
-import android.app.AlertDialog;
 import android.util.Log;
 
 import com.koushikdutta.async.http.AsyncHttpClient;
@@ -9,18 +8,14 @@ import com.koushikdutta.async.http.AsyncHttpResponse;
 
 public class MediaClient implements AbstractMediaComponent {
 
-    private String mHost;
-    private int mPort;
-    private String mUrl;
+    private String host;
+    private int port;
+    private String url;
 
-    public MediaClient(String pHost){
+    public MediaClient(String pHost, int pPort){
 
-        String[] hostParams = pHost.split(":");
-        String host = hostParams[0];
-        int port = Integer.parseInt(hostParams[1].trim());
-
-        mHost = host;
-        mPort = port;
+        host = pHost;
+        port = pPort;
 
     }
     public void play(){
@@ -36,7 +31,7 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     public void shuffle(){
-        doPost("shuffle");
+
     }
 
     public void stop(){
@@ -82,7 +77,7 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     private String getBaseUrl(){
-        return "http://" + mHost + ":" + mPort;
+        return "http://" + host + ":" + port;
     }
 
     public void release(){
