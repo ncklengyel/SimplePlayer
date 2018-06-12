@@ -5,12 +5,15 @@ import android.net.Uri;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static com.example.nckle.myapplication.Utils.getRandomNumber;
+
 public class Playlist {
 
     private ArrayList<Song> songs;
     private int currentIndex;
     private int firstIndex;
     private int lastIndex;
+    private boolean isShuffling = false;
 
     public Playlist(ArrayList<Song> pSongs){
 
@@ -21,7 +24,11 @@ public class Playlist {
     }
 
     public void next(){
-        currentIndex++;
+        if (!isShuffling) {
+            currentIndex++;
+        } else {
+            currentIndex = getRandomNumber(this.getNumberOfSongs());
+        }
 
         if (currentIndex > lastIndex)
             reset();
@@ -29,7 +36,11 @@ public class Playlist {
 
     // TODO maybe check if it's the right thing to return the uri
     public void previous(){
-        currentIndex--;
+        if (!isShuffling) {
+            currentIndex--;
+        } else {
+            currentIndex = getRandomNumber(this.getNumberOfSongs());
+        }
 
         if (currentIndex < firstIndex)
             reset();
@@ -42,11 +53,10 @@ public class Playlist {
         return null;
     }
     public void shuffle(){
-        int numberOfSongs = getNumberOfSongs();
-        if (numberOfSongs != 0) {
-            currentIndex = ThreadLocalRandom.current().nextInt(0, getNumberOfSongs());
-        }
+        isShuffling = !isShuffling;
+        next();
     }
+
     public int getNumberOfSongs(){
         if (songs != null) {
             return songs.size();

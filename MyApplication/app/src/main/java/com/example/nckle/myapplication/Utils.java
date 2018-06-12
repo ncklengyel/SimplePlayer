@@ -1,5 +1,7 @@
 package com.example.nckle.myapplication;
 
+import java.util.concurrent.ThreadLocalRandom;
+
 public class Utils {
 
     /**
@@ -7,7 +9,7 @@ public class Utils {
      * @param ms milliseconds to convert to format mm:ss
      * @return returns a String in mm:ss format
      */
-    public static String millisecondToMMSS(int ms){
+    public static String millisecondToMMSS(int ms) {
 
         int seconds = (ms/1000) % 60;
         int minutes = (ms/1000) / 60;
@@ -22,5 +24,12 @@ public class Utils {
 
         return time;
 
+    }
+
+    public static int getRandomNumber(int maximum) {
+        if (maximum != 0) {
+            return ThreadLocalRandom.current().nextInt(0, maximum);
+        }
+        return 0;
     }
 }
