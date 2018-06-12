@@ -8,6 +8,15 @@
 
 
     <TextView
+        android:id="@+id/lblAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="113dp"
+        android:text="Author" />
+
+    <TextView
         android:id="@+id/timeLeftText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -68,8 +77,8 @@
         android:layout_width="104dp"
         android:layout_height="104dp"
         android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="28dp"
+        android:layout_alignStart="@+id/textView"
+        android:layout_marginBottom="27dp"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         android:src="@drawable/play_button" />
@@ -78,9 +87,8 @@
         android:id="@+id/pauseButton"
         android:layout_width="104dp"
         android:layout_height="104dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="28dp"
+        android:layout_alignTop="@+id/playButton"
+        android:layout_toStartOf="@+id/nextButton"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         android:src="@drawable/pause_button" />
@@ -93,7 +101,7 @@
         android:layout_centerVertical="true"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="192.168.2.17:8080" />
+        android:text="192.168.0.103:8080" />
 
     <TextView
         android:id="@+id/textView"
@@ -114,5 +122,14 @@
         android:layout_alignEnd="@+id/nextButton"
         android:layout_centerVertical="true"
         android:text="Client" />
+
+    <TextView
+        android:id="@+id/lblTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="142dp"
+        android:text="Title" />
 
 </RelativeLayout>

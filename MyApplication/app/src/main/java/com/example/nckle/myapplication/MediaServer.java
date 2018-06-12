@@ -1,6 +1,7 @@
 package com.example.nckle.myapplication;
 
 import android.content.Context;
+import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Environment;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
@@ -24,14 +25,17 @@ public class MediaServer implements AbstractMediaComponent {
     private AsyncHttpServer mHttpSever;
     private Context mContext;
     private Playlist mPlayList;
-    private SeekBar seekBar;
     //TextView timeRight, timeLeft;
 
     public MediaServer(Context pContext){
 
         mPlayList = new Playlist(getMusicOnDevice());
         mContext = pContext;
-        mMediaPlayer = MediaPlayer.create( pContext, mPlayList.getCurrentSong());
+        if (mPlayList.getCurrentSong() != null) {
+            mMediaPlayer = MediaPlayer.create(pContext, mPlayList.getCurrentSong().getSongUri());
+        } else {
+            mMediaPlayer = new MediaPlayer();
+        }
         mHttpSever = new AsyncHttpServer();
         /*timeLeft = aTimeLeft;
         timeRight = aTimeRight;*/
@@ -140,12 +144,20 @@ public class MediaServer implements AbstractMediaComponent {
     private void reset(){
         mMediaPlayer.stop();
         mPlayList.reset();
-        mMediaPlayer = MediaPlayer.create(mContext,mPlayList.getCurrentSong());
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getSongUri());
     }
 
     public void release(){
         mMediaPlayer.release();
         mHttpSever.stop();
+    }
+
+    public String getTitle() {
+        return mPlayList.getCurrentSong().getTitle();
+    }
+
+    public String getAuthor() {
+        return mPlayList.getCurrentSong().getAuthor();
     }
 
     private JSONObject buildResponse(String command, String value){
@@ -170,15 +182,23 @@ public class MediaServer implements AbstractMediaComponent {
         timeRight.setText(Utils.millisecondToMMSS(mMediaPlayer.getDuration()));
     }*/
 
-    private ArrayList<Uri> getMusicOnDevice(){
+    private ArrayList<Song> getMusicOnDevice(){
 
-        ArrayList<Uri> songs = new ArrayList<Uri>();
+        ArrayList<Song> songs = new ArrayList<Song>();
         File musicFile = new File(Environment.getExternalStorageDirectory().toString() + "/Music");
         File[] files = musicFile.listFiles();
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+
         for (File file : files) {
 
             if (file.getName().endsWith(".mp3")){
-                songs.add(Uri.parse(file.getAbsolutePath()));
+                mmr.setDataSource(file.getAbsolutePath());
+                Song newSong = new Song(
+                        Uri.parse(file.getAbsolutePath()),
+                        mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE),
+                        mmr.extractMetadata(MediaMetadataRetriever.METADATA_KEY_ALBUMARTIST)
+                );
+                songs.add(newSong);
             }
 
         }

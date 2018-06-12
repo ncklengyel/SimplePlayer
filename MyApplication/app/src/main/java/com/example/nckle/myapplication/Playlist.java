@@ -6,12 +6,12 @@ import java.util.ArrayList;
 
 public class Playlist {
 
-    private ArrayList<Uri> songs;
+    private ArrayList<Song> songs;
     private int currentIndex;
     private int firstIndex;
     private int lastIndex;
 
-    public Playlist(ArrayList<Uri> pSongs){
+    public Playlist(ArrayList<Song> pSongs){
 
         songs = pSongs;
         currentIndex = 0;
@@ -19,6 +19,7 @@ public class Playlist {
         lastIndex = songs.size() - 1;
     }
 
+    // TODO maybe check if it's the right thing to return the uri
     public Uri next(){
 
         currentIndex++;
@@ -26,10 +27,11 @@ public class Playlist {
         if (currentIndex > lastIndex)
             reset();
 
-        return songs.get(currentIndex);
+        return songs.get(currentIndex).getSongUri();
 
     }
 
+    // TODO maybe check if it's the right thing to return the uri
     public Uri previous(){
 
         currentIndex--;
@@ -37,11 +39,14 @@ public class Playlist {
         if (currentIndex < firstIndex)
             reset();
 
-        return songs.get(currentIndex);
+        return songs.get(currentIndex).getSongUri();
     }
 
-    public Uri getCurrentSong(){
-        return songs.get(currentIndex);
+    public Song getCurrentSong(){
+        if (songs.size() != 0) {
+            return songs.get(currentIndex);
+        }
+        return null;
     }
 
     public void reset(){
