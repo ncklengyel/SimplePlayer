@@ -8,15 +8,16 @@ import com.koushikdutta.async.http.AsyncHttpResponse;
 
 public class MediaClient implements AbstractMediaComponent {
 
-    private String host;
-    private int port;
-    private String url;
+    private String mHost;
+    private int mPort;
 
-    public MediaClient(String pHost, int pPort){
+    public MediaClient(String pHost){
+        String[] hostParams = pHost.split(":");
+        String host = hostParams[0];
+        int port = Integer.parseInt(hostParams[1].trim());
 
-        host = pHost;
-        port = pPort;
-
+        mHost = host;
+        mPort = port;
     }
     public void play(){
         doPost("play");
@@ -31,7 +32,7 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     public void shuffle(){
-
+        doPost("shuffle");
     }
 
     public void stop(){
@@ -77,7 +78,7 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     private String getBaseUrl(){
-        return "http://" + host + ":" + port;
+        return "http://" + mHost + ":" + mPort;
     }
 
     public void release(){
