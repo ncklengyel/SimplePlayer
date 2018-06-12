@@ -22,6 +22,7 @@ public class MainActivity extends Activity {
     private ImageButton nextButton;
     private ImageButton backButton;
     private ImageButton pauseButton;
+    private ImageButton shuffleButton;
     private SeekBar seekBar;
     private TextView timeRight;
     private TextView timeLeft;
@@ -41,18 +42,14 @@ public class MainActivity extends Activity {
         if (!(checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
             //File write logic here
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.REQUEST_CODE);
-
         }
 
-        //TODO We start as client for test purposes (We might what to start as server later on)
-        //topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.1.100",8080));
-
-        //topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
         playButton = (ImageButton) findViewById(R.id.playButton);
         nextButton = (ImageButton) findViewById(R.id.nextButton);
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton = (ImageButton) findViewById(R.id.backButton);
         pauseButton = (ImageButton) findViewById(R.id.pauseButton);
+        shuffleButton = (ImageButton) findViewById(R.id.shuffleButton);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
@@ -134,6 +131,13 @@ public class MainActivity extends Activity {
             }
         });
 
+        shuffleButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topMediaPlayer.shuffle();
+            }
+        });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -181,25 +185,8 @@ public class MainActivity extends Activity {
 
     private void switchToClient(String aHost){
 
-        String host[] = aHost.split(":");
-        String hostname = host[0];
-        int port;
-
-        try{
-             port = Integer.parseInt(host[1].trim());
-        }catch(NumberFormatException nfe){
-            Log.e("MediaClient", "Convertion string to int failed for port");
-            clientSwitch.setChecked(false);
-
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage("Invalid port number");
-            builder.setCancelable(true);
-            builder.show();
-            return;
-        }
-
         topMediaPlayer.release();
-        topMediaPlayer = new TopMediaPlayer(new MediaClient(hostname,port));
+        topMediaPlayer = new TopMediaPlayer(new MediaClient(aHost));
     }
 
     private void switchToServer(){
