@@ -35,7 +35,10 @@ public class MainActivity extends Activity {
     private TextView lblAlbum;
     private ImageView imgAlbumArt;
 
+
+
     public static final int REQUEST_CODE = 1;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +66,20 @@ public class MainActivity extends Activity {
         lblAlbum = (TextView) findViewById(R.id.lblAlbum);
         imgAlbumArt = (ImageView) findViewById(R.id.imgAlbumArt);
 
-        //topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.2.17:8080"));
-        //topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
-        //topMediaPlayer = new TopMediaPlayer(new MediaServerStreaming(this));
-        topMediaPlayer = new TopMediaPlayer(new MediaClientStreaming(this));
+        imgAlbumArt.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this){
+
+            public void onSwipeRight() {
+                topMediaPlayer.next();
+                switchPauseButton();
+            }
+            public void onSwipeLeft() {
+                topMediaPlayer.previous();
+                switchPauseButton();
+            }
+
+        });
+
+        topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
 
         final Handler handler = new Handler();
 
@@ -157,6 +170,7 @@ public class MainActivity extends Activity {
                 switchPauseButton();
             }
         });
+
 
         clientSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
