@@ -70,9 +70,13 @@ public class MainActivity extends Activity {
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                int currentPosition = topMediaPlayer.getCurrentPosition();
+
+                int songDuration = topMediaPlayer.getDuration(); //Duration of the song in mms
+                int currentPosition = topMediaPlayer.getCurrentPosition(); //current position of the song currently playing
+                seekBar.setMax(songDuration);
                 seekBar.setProgress(currentPosition);
                 timeLeft.setText(Utils.millisecondToMMSS(currentPosition));
+                timeRight.setText(Utils.millisecondToMMSS(songDuration));
                 lblTitle.setText(topMediaPlayer.getTitle());
                 lblAuthor.setText(topMediaPlayer.getAuthor());
                 lblAlbum.setText(topMediaPlayer.getAlbum());
@@ -148,7 +152,6 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 topMediaPlayer.previous();
                 switchPauseButton();
-                seekBar.setMax(topMediaPlayer.getDuration());
             }
         });
 
