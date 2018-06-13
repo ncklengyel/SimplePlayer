@@ -99,8 +99,9 @@
         android:id="@+id/clientHostText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
         android:layout_alignStart="@+id/timeLeftText"
-        android:layout_centerVertical="true"
+        android:layout_marginBottom="203dp"
         android:ems="10"
         android:inputType="textPersonName"
         android:text="192.168.0.102:8080" />
@@ -109,8 +110,8 @@
         android:id="@+id/clientSwitch"
         android:layout_width="100dp"
         android:layout_height="54dp"
+        android:layout_alignBottom="@+id/clientHostText"
         android:layout_alignEnd="@+id/nextButton"
-        android:layout_centerVertical="true"
         android:text="Client" />
 
     <TextView
@@ -142,8 +143,8 @@
 
     <ImageView
         android:id="@+id/imgAlbumArt"
-        android:layout_width="150dp"
-        android:layout_height="134dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="80dp"
