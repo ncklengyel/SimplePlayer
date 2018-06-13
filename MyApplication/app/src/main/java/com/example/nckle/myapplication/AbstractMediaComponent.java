@@ -38,8 +38,8 @@ interface AbstractMediaComponent {
 
     String getAlbum();
 
-    Bitmap getAlbumImage();
+    //Bitmap getAlbumImage();
 
-    Song getSong();
+    //Song getSong();
 
 }

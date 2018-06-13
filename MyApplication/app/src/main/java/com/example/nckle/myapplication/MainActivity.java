@@ -63,7 +63,10 @@ public class MainActivity extends Activity {
         lblAlbum = (TextView) findViewById(R.id.lblAlbum);
         imgAlbumArt = (ImageView) findViewById(R.id.imgAlbumArt);
 
-        topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
+        //topMediaPlayer = new TopMediaPlayer(new MediaClient("192.168.2.17:8080"));
+        //topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
+        //topMediaPlayer = new TopMediaPlayer(new MediaServerStreaming(this));
+        topMediaPlayer = new TopMediaPlayer(new MediaClientStreaming(this));
 
         final Handler handler = new Handler();
 
@@ -80,7 +83,7 @@ public class MainActivity extends Activity {
                 lblTitle.setText(topMediaPlayer.getTitle());
                 lblAuthor.setText(topMediaPlayer.getAuthor());
                 lblAlbum.setText(topMediaPlayer.getAlbum());
-                imgAlbumArt.setImageBitmap(topMediaPlayer.getAlbumImage());
+                //imgAlbumArt.setImageBitmap(topMediaPlayer.getAlbumImage()); //TODO uncomment
 
                 if (topMediaPlayer.isPlaying()) {
                     switchPauseButton();

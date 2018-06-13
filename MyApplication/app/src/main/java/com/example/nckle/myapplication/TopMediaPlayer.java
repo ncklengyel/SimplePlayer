@@ -60,9 +60,9 @@ public class TopMediaPlayer implements AbstractMediaComponent{
 
     public String getAlbum(){ return component.getAlbum(); }
 
-    public Song getSong(){ return component.getSong(); }
+    //public Song getSong(){ return component.getSong(); }
 
-    public Bitmap getAlbumImage(){ return component.getAlbumImage(); }
+    //public Bitmap getAlbumImage(){ return component.getAlbumImage(); }
 
 
 }
