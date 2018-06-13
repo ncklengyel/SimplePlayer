@@ -28,7 +28,7 @@ public class MediaServer implements AbstractMediaComponent {
 
     public MediaServer(Context pContext){
 
-        mPlayList = new Playlist(getMusicOnDevice());
+        mPlayList = new Playlist(Utils.getMusicOnDevice());
         mContext = pContext;
         if (mPlayList.getCurrentSong() != null) {
             mMediaPlayer = MediaPlayer.create(pContext, mPlayList.getCurrentSong().getPath());
@@ -225,29 +225,5 @@ public class MediaServer implements AbstractMediaComponent {
         timeLeft.setText("0:00");
         timeRight.setText(Utils.millisecondToMMSS(mMediaPlayer.getDuration()));
     }*/
-
-    private ArrayList<Song> getMusicOnDevice(){
-
-        ArrayList<Song> songs = new ArrayList<Song>();
-        File musicFile = new File(Environment.getExternalStorageDirectory().toString() + "/Music");
-        File[] files = musicFile.listFiles();
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-
-        for (File file : files) {
-
-            if (file.getName().endsWith(".mp3")){
-                mmr.setDataSource(file.getAbsolutePath());
-                Song newSong = new Song(
-                    Uri.parse(file.getAbsolutePath()),
-                    mmr
-                );
-                songs.add(newSong);
-            }
-
-        }
-
-        return songs;
-
-    }
 
 }

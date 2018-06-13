@@ -2,8 +2,13 @@ package com.example.nckle.myapplication;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaMetadataRetriever;
+import android.net.Uri;
+import android.os.Environment;
 import android.util.Base64;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Utils {
@@ -41,5 +46,29 @@ public class Utils {
         byte[] decodedString = Base64.decode(stringPicture, Base64.DEFAULT);
         Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         return decodedByte;
+    }
+
+    public static ArrayList<Song> getMusicOnDevice(){
+
+        ArrayList<Song> songs = new ArrayList<Song>();
+        File musicFile = new File(Environment.getExternalStorageDirectory().toString() + "/Music");
+        File[] files = musicFile.listFiles();
+        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
+
+        for (File file : files) {
+
+            if (file.getName().endsWith(".mp3")){
+                mmr.setDataSource(file.getAbsolutePath());
+                Song newSong = new Song(
+                        Uri.parse(file.getAbsolutePath()),
+                        mmr
+                );
+                songs.add(newSong);
+            }
+
+        }
+
+        return songs;
+
     }
 }
