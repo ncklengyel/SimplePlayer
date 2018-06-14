@@ -14,6 +14,8 @@ public class Playlist {
     private int firstIndex;
     private int lastIndex;
     private boolean isShuffling = false;
+    private boolean isRepeatAll = false;
+    private boolean isRepeatOne = false;
 
     public Playlist(ArrayList<Song> pSongs){
 
@@ -24,8 +26,11 @@ public class Playlist {
     }
 
     public void next(){
+        // If not shuffling go next song
         if (!isShuffling) {
             currentIndex++;
+        } else if(isRepeatOne) {
+
         } else {
             currentIndex = getRandomNumber(this.getNumberOfSongs());
         }
@@ -34,10 +39,12 @@ public class Playlist {
             reset();
     }
 
-    // TODO maybe check if it's the right thing to return the uri
     public void previous(){
+        // If not shuffling go next song
         if (!isShuffling) {
             currentIndex--;
+        } else if(isRepeatOne) {
+
         } else {
             currentIndex = getRandomNumber(this.getNumberOfSongs());
         }
@@ -53,8 +60,13 @@ public class Playlist {
         return null;
     }
     public void shuffle(){
-        isShuffling = !isShuffling;
-        next();
+        if (!isRepeatOne) {
+            isShuffling = !isShuffling;
+            next();
+        }
+    }
+    public void repeat(){
+        isRepeatOne = !isRepeatOne;
     }
 
     public int getNumberOfSongs(){

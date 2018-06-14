@@ -30,6 +30,9 @@ public class MediaClient implements AbstractMediaComponent {
     private Context mContext;
     private Song mSong;
     private boolean isStreaming = false;
+    private boolean isShuffling = false;
+    private boolean isRepeatOne = false;
+    private boolean isRepeatAll = false;
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
@@ -63,6 +66,7 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     public void shuffle(){
+        isShuffling = !isShuffling;
         doPost("shuffle");
     }
 
@@ -74,12 +78,9 @@ public class MediaClient implements AbstractMediaComponent {
         }
     }
 
-    public void repeatOne(){
-
-    }
-
-    public void repeatAll(){
-
+    public void toggleRepeatMode(){
+        isRepeatOne = !isRepeatOne;
+        doPost("repeat");
     }
 
     public int getCurrentPosition(){
@@ -198,7 +199,7 @@ public class MediaClient implements AbstractMediaComponent {
         mMediaPlayer.reset();
         if(isStreaming) {
             try {
-                mMediaPlayer.setDataSource("http://" + mHost + ":8082");
+                mMediaPlayer.setDataSource("http://" + mHost + ":" + mPort);
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.prepare();
                 mMediaPlayer.start();
