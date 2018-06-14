@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -15,16 +14,16 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.content.pm.PackageManager;
 import android.widget.CompoundButton;
-import android.app.AlertDialog;
 
 public class MainActivity extends Activity {
 
     private ImageButton playButton;
     private ImageButton nextButton;
-    private ImageButton backButton;
+    private ImageButton previousButton;
     private ImageButton pauseButton;
     private ImageButton shuffleButton;
     private ImageButton repeatButton;
+    private ImageButton stopButton;
     private SeekBar seekBar;
     private TextView timeRight;
     private TextView timeLeft;
@@ -54,11 +53,12 @@ public class MainActivity extends Activity {
 
         playButton = (ImageButton) findViewById(R.id.playButton);
         nextButton = (ImageButton) findViewById(R.id.nextButton);
-        backButton = (ImageButton) findViewById(R.id.backButton);
-        backButton = (ImageButton) findViewById(R.id.backButton);
+        previousButton = (ImageButton) findViewById(R.id.backButton);
+        previousButton = (ImageButton) findViewById(R.id.backButton);
         pauseButton = (ImageButton) findViewById(R.id.pauseButton);
         repeatButton = (ImageButton) findViewById(R.id.repeatButton);
         shuffleButton = (ImageButton) findViewById(R.id.shuffleButton);
+        stopButton = (ImageButton) findViewById(R.id.stopButton);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
@@ -75,11 +75,9 @@ public class MainActivity extends Activity {
 
             public void onSwipeRight() {
                 topMediaPlayer.next();
-                switchPauseButton();
             }
             public void onSwipeLeft() {
                 topMediaPlayer.previous();
-                switchPauseButton();
             }
 
         });
@@ -104,7 +102,7 @@ public class MainActivity extends Activity {
                 imgAlbumArt.setImageBitmap(topMediaPlayer.getAlbumImage());
 
                 if (topMediaPlayer.isPlaying()) {
-                    switchPauseButton();
+                    switchStopButton();
                 } else {
                     switchPlayButton();
                 }
@@ -137,7 +135,7 @@ public class MainActivity extends Activity {
             public void onClick(View v) {
                 if (!topMediaPlayer.isPlaying()) {
                     topMediaPlayer.play();
-                    switchPauseButton();
+                    switchStopButton();
                 }
             }
         });
@@ -145,12 +143,15 @@ public class MainActivity extends Activity {
         pauseButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO bring back this if
-//                if (topMediaPlayer.isPlaying())
-//                {
                 topMediaPlayer.pause();
+            }
+        });
+
+        stopButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topMediaPlayer.stop();
                 switchPlayButton();
-//                }
             }
         });
 
@@ -158,7 +159,6 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 topMediaPlayer.next();
-                switchPauseButton();
             }
         });
 
@@ -176,11 +176,10 @@ public class MainActivity extends Activity {
             }
         });
 
-        backButton.setOnClickListener(new View.OnClickListener() {
+        previousButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 topMediaPlayer.previous();
-                switchPauseButton();
             }
         });
 
@@ -206,17 +205,17 @@ public class MainActivity extends Activity {
     }
 
     private void switchPlayButton() {
-//        pauseButton.setEnabled(false);
-//        pauseButton.setVisibility(View.GONE);
-//        playButton.setEnabled(true);
-//        playButton.setVisibility(View.VISIBLE);
+        stopButton.setEnabled(false);
+        stopButton.setVisibility(View.GONE);
+        playButton.setEnabled(true);
+        playButton.setVisibility(View.VISIBLE);
     }
 
-    private void switchPauseButton() {
-//        playButton.setEnabled(false);
-//        playButton.setVisibility(View.GONE);
-//        pauseButton.setEnabled(true);
-//        pauseButton.setVisibility(View.VISIBLE);
+    private void switchStopButton() {
+        playButton.setEnabled(false);
+        playButton.setVisibility(View.GONE);
+        stopButton.setEnabled(true);
+        stopButton.setVisibility(View.VISIBLE);
     }
 
     @Override

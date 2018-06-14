@@ -84,6 +84,16 @@
         android:src="@drawable/play_button" />
 
     <ImageButton
+        android:id="@+id/stopButton"
+        android:layout_width="87dp"
+        android:layout_height="88dp"
+        android:layout_alignTop="@+id/nextButton"
+        android:layout_toEndOf="@+id/backButton"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/stop_button" />
+
+    <ImageButton
         android:id="@+id/pauseButton"
         android:layout_width="92dp"
         android:layout_height="86dp"

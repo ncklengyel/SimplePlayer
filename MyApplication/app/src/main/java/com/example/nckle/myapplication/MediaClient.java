@@ -25,6 +25,7 @@ import static com.example.nckle.myapplication.Utils.convertJSONtoBitmap;
 public class MediaClient implements AbstractMediaComponent {
 
     private MediaPlayer mMediaPlayer = new MediaPlayer();
+    private String mHostStream;
     private String mHost;
     private int mPort;
     private Context mContext;
@@ -33,10 +34,11 @@ public class MediaClient implements AbstractMediaComponent {
     private boolean isShuffling = false;
     private boolean isRepeatOne = false;
     private boolean isRepeatAll = false;
+    private boolean isPlaying = false;
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
-        toggleModes();
+        toggleModes(false);
     }
 
     public MediaClient(Context pContext, String pHost){
@@ -44,13 +46,16 @@ public class MediaClient implements AbstractMediaComponent {
         String host = hostParams[0];
         int port = Integer.parseInt(hostParams[1].trim());
 
+        isPlaying = false;
         mContext = pContext;
+        mHostStream = "http://" + host + ":" + port;
         mHost = host;
         mPort = port;
         doPost("song");
     }
     public void play(){
         if (!isStreaming) {
+            isPlaying = true;
             doPost("play");
         } else {
             mMediaPlayer.start();
@@ -72,9 +77,10 @@ public class MediaClient implements AbstractMediaComponent {
 
     public void stop(){
         if (!isStreaming) {
+            isPlaying = false;
             doPost("stop");
         } else {
-            mMediaPlayer.stop();
+             toggleModes(true);
         }
     }
 
@@ -147,7 +153,11 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     public boolean isPlaying(){
-        return false;
+        if (isStreaming) {
+            return mMediaPlayer.isPlaying();
+        } else {
+            return isPlaying;
+        }
     }
 
     private String getBaseUrl(){
@@ -184,7 +194,7 @@ public class MediaClient implements AbstractMediaComponent {
                                 convertJSONtoBitmap(song.get("albumImage").toString())
                         );
                         if (isStreaming) {
-                            toggleModes();
+                            toggleModes(false);
                         }
                     } catch (JSONException jsonE) {
                         jsonE.printStackTrace();
@@ -194,14 +204,16 @@ public class MediaClient implements AbstractMediaComponent {
         });
     }
 
-    private void toggleModes(){
+    private void toggleModes(boolean isStopping){
         mMediaPlayer.reset();
         if(isStreaming) {
             try {
-                mMediaPlayer.setDataSource("http://" + mHost + ":" + mPort);
+                mMediaPlayer.setDataSource(mHostStream);
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.prepare();
-                mMediaPlayer.start();
+                if(!isStopping) {
+                    mMediaPlayer.start();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

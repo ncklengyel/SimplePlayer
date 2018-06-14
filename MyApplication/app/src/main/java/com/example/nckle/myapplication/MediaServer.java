@@ -134,6 +134,7 @@ public class MediaServer implements AbstractMediaComponent {
 
     public void stop(){
         mMediaPlayer.stop();
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
     }
 
     public void toggleRepeatMode(){
