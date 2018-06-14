@@ -2,6 +2,7 @@ package com.example.nckle.myapplication;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.media.AudioManager;
 import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.os.Environment;
@@ -14,21 +15,32 @@ import android.util.Log;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.io.File;
 
+import fi.iki.elonen.NanoHTTPD;
 
-public class MediaServer implements AbstractMediaComponent {
+
+public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
 
     private MediaPlayer mMediaPlayer;
     private AsyncHttpServer mHttpSever;
     private Context mContext;
     private Playlist mPlayList;
-    //TextView timeRight, timeLeft;
+    private boolean isStreaming = false;
+
+    public void setIsStreaming(boolean pIsStreaming) {
+        isStreaming = pIsStreaming;
+        toggleModes();
+    }
 
     public MediaServer(Context pContext){
-
-        mPlayList = new Playlist(getMusicOnDevice());
+        super(8082);
+        mPlayList = new Playlist(Utils.getMusicOnDevice());
         mContext = pContext;
         if (mPlayList.getCurrentSong() != null) {
             mMediaPlayer = MediaPlayer.create(pContext, mPlayList.getCurrentSong().getPath());
@@ -88,8 +100,15 @@ public class MediaServer implements AbstractMediaComponent {
             }
         });
 
-        // TODO should return a boolean
         mHttpSever.post("/shuffle", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                shuffle();
+                response.send(buildResponse("shuffle", mPlayList.getCurrentSong().getJSON()));
+            }
+        });
+
+        mHttpSever.post("/stream", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 shuffle();
@@ -100,6 +119,23 @@ public class MediaServer implements AbstractMediaComponent {
         Log.i("Starting Server:","Listening on 8080");
         mHttpSever.listen(8080);
 
+    }
+
+    @Override
+    public Response serve(IHTTPSession session) {
+        InputStream myInput = null;
+        try {
+            myInput = new FileInputStream(mPlayList.getCurrentSong().getPath().toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return createResponse(Response.Status.OK, "audio/mpeg", myInput);
+    }
+
+    //Announce that the file server accepts partial content requests
+    private Response createResponse(Response.Status status, String mimeType,
+                                    InputStream message) {
+        return newChunkedResponse(status, mimeType, message);
     }
 
     public void play(){
@@ -220,34 +256,16 @@ public class MediaServer implements AbstractMediaComponent {
 
     }
 
-    //Crash the app
-   /* private void updateRightLeftTime(){
-        timeLeft.setText("0:00");
-        timeRight.setText(Utils.millisecondToMMSS(mMediaPlayer.getDuration()));
-    }*/
-
-    private ArrayList<Song> getMusicOnDevice(){
-
-        ArrayList<Song> songs = new ArrayList<Song>();
-        File musicFile = new File(Environment.getExternalStorageDirectory().toString() + "/Music");
-        File[] files = musicFile.listFiles();
-        MediaMetadataRetriever mmr = new MediaMetadataRetriever();
-
-        for (File file : files) {
-
-            if (file.getName().endsWith(".mp3")){
-                mmr.setDataSource(file.getAbsolutePath());
-                Song newSong = new Song(
-                    Uri.parse(file.getAbsolutePath()),
-                    mmr
-                );
-                songs.add(newSong);
+    private void toggleModes(){
+        if(isStreaming) {
+            try {
+                super.start();
+            }catch (IOException e){
+                e.printStackTrace();
             }
-
+        } else {
+            super.stop();
         }
-
-        return songs;
-
     }
 
 }

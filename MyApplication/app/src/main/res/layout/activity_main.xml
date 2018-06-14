@@ -114,6 +114,14 @@
         android:layout_alignEnd="@+id/nextButton"
         android:text="Client" />
 
+    <Switch
+        android:id="@+id/streamSwitch"
+        android:layout_width="100dp"
+        android:layout_height="54dp"
+        android:layout_alignBottom="@+id/imgAlbumArt"
+        android:layout_alignEnd="@+id/nextButton"
+        android:text="Stream" />
+
     <TextView
         android:id="@+id/lblTitle"
         android:layout_width="wrap_content"
@@ -143,10 +151,10 @@
 
     <ImageView
         android:id="@+id/imgAlbumArt"
-        android:layout_width="250dp"
-        android:layout_height="250dp"
+        android:layout_width="159dp"
+        android:layout_height="146dp"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="80dp"
+        android:layout_alignStart="@+id/backButton"
+        android:layout_marginTop="85dp"
         android:src="@android:color/transparent" />
 </RelativeLayout>

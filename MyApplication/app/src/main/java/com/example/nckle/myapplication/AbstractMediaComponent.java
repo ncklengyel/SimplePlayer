@@ -42,4 +42,5 @@ interface AbstractMediaComponent {
 
     Song getSong();
 
+    void setIsStreaming(boolean pIsStreaming);
 }

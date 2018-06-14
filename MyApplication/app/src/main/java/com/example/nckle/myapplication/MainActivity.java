@@ -29,6 +29,7 @@ public class MainActivity extends Activity {
     private TextView timeLeft;
     private TopMediaPlayer topMediaPlayer;
     private Switch clientSwitch;
+    private Switch streamSwitch;
     private EditText clientHostText;
     private TextView lblTitle;
     private TextView lblAuthor;
@@ -36,7 +37,7 @@ public class MainActivity extends Activity {
     private ImageView imgAlbumArt;
 
 
-
+    private boolean isClient = false;
     public static final int REQUEST_CODE = 1;
 
 
@@ -60,12 +61,14 @@ public class MainActivity extends Activity {
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
         clientSwitch = (Switch) findViewById(R.id.clientSwitch);
+        streamSwitch = (Switch) findViewById(R.id.streamSwitch);
         clientHostText = (EditText) findViewById(R.id.clientHostText);
         lblTitle = (TextView) findViewById(R.id.lblTitle);
         lblAuthor = (TextView) findViewById(R.id.lblAuthor);
         lblAlbum = (TextView) findViewById(R.id.lblAlbum);
         imgAlbumArt = (ImageView) findViewById(R.id.imgAlbumArt);
 
+        // TODO if time refactor this
         imgAlbumArt.setOnTouchListener(new OnSwipeTouchListener(MainActivity.this){
 
             public void onSwipeRight() {
@@ -171,7 +174,6 @@ public class MainActivity extends Activity {
             }
         });
 
-
         clientSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 // do something, the isChecked will be
@@ -182,6 +184,12 @@ public class MainActivity extends Activity {
                     switchToServer();
                 }
 
+            }
+        });
+
+        streamSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            public void onCheckedChanged(CompoundButton buttonView, boolean pIsStreaming) {
+                topMediaPlayer.setIsStreaming(pIsStreaming);
             }
         });
 
@@ -207,10 +215,9 @@ public class MainActivity extends Activity {
         topMediaPlayer.release();
     }
 
-
     private void switchToClient(String aHost) {
         topMediaPlayer.release();
-        topMediaPlayer = new TopMediaPlayer(new MediaClient(aHost));
+        topMediaPlayer = new TopMediaPlayer(new MediaClient(this, aHost));
     }
 
     private void switchToServer() {
