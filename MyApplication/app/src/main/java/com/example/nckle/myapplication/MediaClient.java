@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.util.Log;
 
 import com.koushikdutta.async.http.AsyncHttpClient;
@@ -14,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import static android.media.MediaPlayer.*;
 import static com.example.nckle.myapplication.Utils.convertJSONtoBitmap;
@@ -26,7 +30,6 @@ public class MediaClient implements AbstractMediaComponent {
     private Context mContext;
     private Song mSong;
     private boolean isStreaming = false;
-    private boolean isMediaPlayerPrepared = false;
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
@@ -37,14 +40,6 @@ public class MediaClient implements AbstractMediaComponent {
         String[] hostParams = pHost.split(":");
         String host = hostParams[0];
         int port = Integer.parseInt(hostParams[1].trim());
-
-        mMediaPlayer.setOnPreparedListener(new OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                isMediaPlayerPrepared = true;
-                mMediaPlayer.start();
-            }
-        });
 
         mContext = pContext;
         mHost = host;
@@ -96,7 +91,7 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     public int getDuration(){
-        if (isStreaming && isMediaPlayerPrepared) {
+        if (isStreaming) {
             return mMediaPlayer.getDuration();
         } else if (mSong != null){
             return Integer.parseInt(mSong.getLength());
@@ -204,8 +199,8 @@ public class MediaClient implements AbstractMediaComponent {
             try {
                 mMediaPlayer.setDataSource("http://" + mHost + ":8082");
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-                mMediaPlayer.prepareAsync();
-
+                mMediaPlayer.prepare();
+                mMediaPlayer.start();
             } catch (IOException e) {
                 e.printStackTrace();
             }
