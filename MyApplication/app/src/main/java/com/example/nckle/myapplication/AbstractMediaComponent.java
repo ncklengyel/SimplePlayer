@@ -14,9 +14,7 @@ interface AbstractMediaComponent {
 
     void stop();
 
-    void repeatOne();
-
-    void repeatAll();
+    void toggleRepeatMode();
 
     int getCurrentPosition();
 

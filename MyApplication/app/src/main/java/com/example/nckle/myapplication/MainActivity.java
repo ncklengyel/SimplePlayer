@@ -24,6 +24,7 @@ public class MainActivity extends Activity {
     private ImageButton backButton;
     private ImageButton pauseButton;
     private ImageButton shuffleButton;
+    private ImageButton repeatButton;
     private SeekBar seekBar;
     private TextView timeRight;
     private TextView timeLeft;
@@ -56,6 +57,7 @@ public class MainActivity extends Activity {
         backButton = (ImageButton) findViewById(R.id.backButton);
         backButton = (ImageButton) findViewById(R.id.backButton);
         pauseButton = (ImageButton) findViewById(R.id.pauseButton);
+        repeatButton = (ImageButton) findViewById(R.id.repeatButton);
         shuffleButton = (ImageButton) findViewById(R.id.shuffleButton);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
@@ -166,6 +168,14 @@ public class MainActivity extends Activity {
                 topMediaPlayer.shuffle();
             }
         });
+
+        repeatButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topMediaPlayer.toggleRepeatMode();
+            }
+        });
+
         backButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -34,12 +34,8 @@ public class TopMediaPlayer implements AbstractMediaComponent {
         component.stop();
     }
 
-    public void repeatOne() {
-        component.repeatOne();
-    }
-
-    public void repeatAll() {
-        component.repeatAll();
+    public void toggleRepeatMode() {
+        component.toggleRepeatMode();
     }
 
     public int getDuration() {

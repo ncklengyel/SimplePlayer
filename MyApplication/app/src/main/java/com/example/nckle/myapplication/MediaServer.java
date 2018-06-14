@@ -2,30 +2,17 @@ package com.example.nckle.myapplication;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.media.AudioManager;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
-import android.os.Environment;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
 import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
 import com.koushikdutta.async.http.server.AsyncHttpServerResponse;
 import com.koushikdutta.async.http.server.HttpServerRequestCallback;
-import android.net.Uri;
 import android.util.Log;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
 import java.io.File;
 
-import fi.iki.elonen.NanoHTTPD;
-
-
-public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
+public class MediaServer implements AbstractMediaComponent {
 
     private MediaPlayer mMediaPlayer;
     private AsyncHttpServer mHttpSever;
@@ -35,11 +22,9 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
-        toggleModes();
     }
 
     public MediaServer(Context pContext){
-        super(8082);
         mPlayList = new Playlist(Utils.getMusicOnDevice());
         mContext = pContext;
         if (mPlayList.getCurrentSong() != null) {
@@ -52,7 +37,6 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
         mHttpSever.post("/play", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-                //AsyncHttpRequestBody<String> body = request.getBody();
                 response.send(buildResponse("play", mPlayList.getCurrentSong().getJSON()));
                 play();
             }
@@ -106,34 +90,16 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
             }
         });
 
-        mHttpSever.post("/stream", new HttpServerRequestCallback() {
+        mHttpSever.get("/", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-                shuffle();
-                response.send(buildResponse("shuffle", mPlayList.getCurrentSong().getJSON()));
+                File song = new File(mPlayList.getCurrentSong().getPath().toString());
+                response.sendFile(song);
             }
         });
 
         Log.i("Starting Server:","Listening on 8080");
         mHttpSever.listen(8080);
-
-    }
-
-    @Override
-    public Response serve(IHTTPSession session) {
-        InputStream myInput = null;
-        try {
-            myInput = new FileInputStream(mPlayList.getCurrentSong().getPath().toString());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return createResponse(Response.Status.OK, "audio/mpeg", myInput);
-    }
-
-    //Announce that the file server accepts partial content requests
-    private Response createResponse(Response.Status status, String mimeType,
-                                    InputStream message) {
-        return newChunkedResponse(status, mimeType, message);
     }
 
     public void play(){
@@ -144,14 +110,18 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
         mMediaPlayer.stop();
         mPlayList.next();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        mMediaPlayer.start();
+        if(!isStreaming) {
+            mMediaPlayer.start();
+        }
     }
 
     public void previous(){
         mMediaPlayer.stop();
         mPlayList.previous();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        mMediaPlayer.start();
+        if(!isStreaming) {
+            mMediaPlayer.start();
+        }
 
     }
 
@@ -159,19 +129,18 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
         mMediaPlayer.stop();
         mPlayList.shuffle();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        mMediaPlayer.start();
+        if(!isStreaming) {
+            mMediaPlayer.start();
+        }
     }
 
     public void stop(){
         mMediaPlayer.stop();
     }
 
-    public void repeatOne(){
-
-    }
-
-    public void repeatAll(){
-
+    public void toggleRepeatMode(){
+        mPlayList.repeat();
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
     }
 
     public int getCurrentPosition(){
@@ -255,18 +224,6 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
 
     public void setVolume(int level){
 
-    }
-
-    private void toggleModes(){
-        if(isStreaming) {
-            try {
-                super.start();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        } else {
-            super.stop();
-        }
     }
 
 }
