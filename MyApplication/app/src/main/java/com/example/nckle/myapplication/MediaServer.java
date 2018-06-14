@@ -48,8 +48,6 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
             mMediaPlayer = new MediaPlayer();
         }
         mHttpSever = new AsyncHttpServer();
-        /*timeLeft = aTimeLeft;
-        timeRight = aTimeRight;*/
 
         mHttpSever.post("/play", new HttpServerRequestCallback() {
             @Override
@@ -181,7 +179,10 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
     }
 
     public int getDuration(){
-        return mMediaPlayer.getDuration();
+        if (!isStreaming)
+            return mMediaPlayer.getDuration();
+
+        return 0;
     }
 
     public void seekTo(int position){
