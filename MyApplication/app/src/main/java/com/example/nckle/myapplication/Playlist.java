@@ -30,7 +30,7 @@ public class Playlist {
         if (!isShuffling) {
             currentIndex++;
         } else if(isRepeatOne) {
-
+            currentIndex = currentIndex;
         } else {
             currentIndex = getRandomNumber(this.getNumberOfSongs());
         }
@@ -44,7 +44,7 @@ public class Playlist {
         if (!isShuffling) {
             currentIndex--;
         } else if(isRepeatOne) {
-
+            currentIndex = currentIndex;
         } else {
             currentIndex = getRandomNumber(this.getNumberOfSongs());
         }
@@ -65,8 +65,13 @@ public class Playlist {
             next();
         }
     }
-    public void repeat(){
+
+    public void toggleRepeatMode(){
         isRepeatOne = !isRepeatOne;
+    }
+
+    public boolean getIsRepeatingOne(){
+        return isRepeatOne;
     }
 
     public int getNumberOfSongs(){

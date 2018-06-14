@@ -107,31 +107,29 @@ public class MediaServer implements AbstractMediaComponent {
     }
 
     public void next(){
+        if (!mPlayList.getIsRepeatingOne()) {
+            mPlayList.next();
+        }
         mMediaPlayer.stop();
-        mPlayList.next();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        if(!isStreaming) {
+        if (!isStreaming) {
             mMediaPlayer.start();
         }
     }
 
     public void previous(){
+        if (!mPlayList.getIsRepeatingOne()) {
+            mPlayList.previous();
+        }
         mMediaPlayer.stop();
-        mPlayList.previous();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
         if(!isStreaming) {
             mMediaPlayer.start();
         }
-
     }
 
     public void shuffle(){
-        mMediaPlayer.stop();
         mPlayList.shuffle();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        if(!isStreaming) {
-            mMediaPlayer.start();
-        }
     }
 
     public void stop(){
@@ -139,8 +137,7 @@ public class MediaServer implements AbstractMediaComponent {
     }
 
     public void toggleRepeatMode(){
-        mPlayList.repeat();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+        mPlayList.toggleRepeatMode();
     }
 
     public int getCurrentPosition(){
