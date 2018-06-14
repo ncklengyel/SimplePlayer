@@ -186,7 +186,7 @@ public class MediaClient implements AbstractMediaComponent {
                             toggleModes();
                         }
                     } catch (JSONException jsonE) {
-                        e.printStackTrace();
+                        jsonE.printStackTrace();
                     }
                 }
             }
