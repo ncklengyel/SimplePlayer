@@ -57,7 +57,7 @@ public class Song {
         return albumImage;
     }
 
-    public String getAlbumImageJSON() {
+    private String getAlbumImageJSON() {
         if (albumImage != null) {
             final int COMPRESSION_QUALITY = 100;
             String encodedAlbumImage;
@@ -106,13 +106,13 @@ public class Song {
             String pArtist,
             String pAlbum,
             String pLength,
-            Bitmap palbumImage
+            Bitmap pAlbumImage
     ){
         title = pTitle;
         artist = pArtist;
         album = pAlbum;
         length = pLength;
-        albumImage = palbumImage;
+        albumImage = pAlbumImage;
     }
 
 }

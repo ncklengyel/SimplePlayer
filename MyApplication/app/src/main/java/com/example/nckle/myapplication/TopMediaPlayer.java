@@ -2,67 +2,92 @@ package com.example.nckle.myapplication;
 
 import android.graphics.Bitmap;
 
-public class TopMediaPlayer implements AbstractMediaComponent{
+public class TopMediaPlayer implements AbstractMediaComponent {
 
     public AbstractMediaComponent component;
 
-    public  TopMediaPlayer(AbstractMediaComponent pComponent){
-
+    public TopMediaPlayer(AbstractMediaComponent pComponent) {
         component = pComponent;
-
     }
 
-    public void setVolume(int level){ component.setVolume(level);}
+    public void setVolume(int level) {
+        component.setVolume(level);
+    }
 
-    public void play(){
+    public void play() {
         component.play();
     }
 
-    public void next(){
+    public void next() {
         component.next();
     }
 
-    public void previous(){
+    public void previous() {
         component.previous();
     }
 
-    public void shuffle(){
+    public void shuffle() {
         component.shuffle();
     }
 
-    public void stop(){
+    public void stop() {
         component.stop();
     }
 
-    public void repeatOne(){
+    public void repeatOne() {
         component.repeatOne();
     }
 
-    public void repeatAll(){
+    public void repeatAll() {
         component.repeatAll();
     }
 
-    public int getDuration() { return component.getDuration();}
+    public int getDuration() {
+        return component.getDuration();
+    }
 
-    public int getCurrentPosition() { return component.getCurrentPosition();}
+    public int getCurrentPosition() {
+        return component.getCurrentPosition();
+    }
 
-    public void seekTo(int position){ component.seekTo(position);}
+    public void seekTo(int position) {
+        component.seekTo(position);
+    }
 
-    public void pause(){ component.pause();}
+    public void pause() {
+        component.pause();
+    }
 
-    public boolean isPlaying(){ return component.isPlaying();}
+    public boolean isPlaying() {
+        return component.isPlaying();
+    }
 
-    public void release(){ component.release(); }
+    public void release() {
+        component.release();
+    }
 
-    public String getTitle(){ return component.getTitle(); }
+    public String getTitle() {
+        return component.getTitle();
+    }
 
-    public String getAuthor(){ return component.getAuthor(); }
+    public String getAuthor() {
+        return component.getAuthor();
+    }
 
-    public String getAlbum(){ return component.getAlbum(); }
+    public String getAlbum() {
+        return component.getAlbum();
+    }
 
-    //public Song getSong(){ return component.getSong(); }
+    public Song getSong() {
+        return component.getSong();
+    }
 
-    //public Bitmap getAlbumImage(){ return component.getAlbumImage(); }
+    public Bitmap getAlbumImage() {
+        return component.getAlbumImage();
+    }
 
+    public void setIsStreaming(boolean pIsStreaming) {
+        component.setIsStreaming(pIsStreaming);
+    }
 
 }
