@@ -47,6 +47,13 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
         } else {
             mMediaPlayer = new MediaPlayer();
         }
+
+        //set the volume of the mediaplayer
+        //if you want to change the volume of the player you need to compute the volume with
+        // Utils.getComputedVolume and then pass it to mMediaPlayer.setVolume function
+        float computedVolume = Utils.getComputedVolume(AbstractMediaComponent.DEFAULT_VOLUME);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
+
         mHttpSever = new AsyncHttpServer();
 
         mHttpSever.post("/play", new HttpServerRequestCallback() {
@@ -253,8 +260,9 @@ public class MediaServer extends NanoHTTPD implements AbstractMediaComponent {
         return json;
     }
 
-    public void setVolume(int level){
-
+    public void setVolume(int volume){
+        float computedVolume = Utils.getComputedVolume(volume);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
     }
 
     private void toggleModes(){

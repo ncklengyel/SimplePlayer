@@ -157,8 +157,9 @@ public class MediaClient implements AbstractMediaComponent {
         
     }
 
-    public void setVolume(int level){
-
+    public void setVolume(int volume){
+        float computedVolume = Utils.getComputedVolume(volume);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
     }
 
     private void doPost(final String command){

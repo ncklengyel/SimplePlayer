@@ -4,6 +4,9 @@ import android.graphics.Bitmap;
 
 interface AbstractMediaComponent {
 
+    int MAX_VOLUME = 10;
+    int DEFAULT_VOLUME = 5;
+
     void play();
 
     void next();
@@ -30,7 +33,7 @@ interface AbstractMediaComponent {
 
     void release();
 
-    void setVolume(int level);
+    void setVolume(int volume);
 
     String getTitle();
 
