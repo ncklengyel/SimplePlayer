@@ -84,9 +84,16 @@ public class MediaClient implements AbstractMediaComponent {
         }
     }
 
-    public void toggleRepeatMode(){
+    public void repeatOne(){
+        isRepeatAll = false;
         isRepeatOne = !isRepeatOne;
-        doPost("repeat");
+        doPost("repeatOne");
+    }
+
+    public void repeatAll(){
+        isRepeatOne = false;
+        isRepeatAll = !isRepeatAll;
+        doPost("loop");
     }
 
     public int getCurrentPosition(){
@@ -109,6 +116,8 @@ public class MediaClient implements AbstractMediaComponent {
     public void seekTo(int position){
         if (isStreaming) {
             mMediaPlayer.seekTo(position);
+        } else {
+            doPost("seekTo");
         }
     }
 
@@ -185,16 +194,17 @@ public class MediaClient implements AbstractMediaComponent {
                     Log.d("MediaClient response:", result);
                     try {
                         JSONObject response = new JSONObject(result);
-                        JSONObject song = new JSONObject((String)response.get(command));
-                        mSong = new Song(
-                                song.get("title").toString(),
-                                song.get("artist").toString(),
-                                song.get("album").toString(),
-                                song.get("length").toString(),
-                                convertJSONtoBitmap(song.get("albumImage").toString())
-                        );
-                        if (isStreaming) {
-                            toggleModes(false);
+                        if (response.get("title") != null) {
+                            mSong = new Song(
+                                    response.get("title").toString(),
+                                    response.get("artist").toString(),
+                                    response.get("album").toString(),
+                                    response.get("length").toString(),
+                                    convertJSONtoBitmap(response.get("albumImage").toString())
+                            );
+                            if (isStreaming) {
+                                toggleModes(false);
+                            }
                         }
                     } catch (JSONException jsonE) {
                         jsonE.printStackTrace();

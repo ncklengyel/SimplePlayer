@@ -70,7 +70,7 @@ public class Song {
         return null;
     }
 
-    public String getJSON() {
+    public String getJSON(boolean isPlaying) {
         JSONObject json = new JSONObject();
         try {
             json.put("title", getTitle());
@@ -78,6 +78,7 @@ public class Song {
             json.put("length", getLength());
             json.put("album", getAlbum());
             json.put("albumImage", getAlbumImageJSON());
+            json.put("isPlaying", isPlaying);
         } catch (JSONException jsonE) {
             // TODO handle this exception
         }

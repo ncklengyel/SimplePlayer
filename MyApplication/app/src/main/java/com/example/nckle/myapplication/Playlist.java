@@ -66,12 +66,24 @@ public class Playlist {
         }
     }
 
-    public void toggleRepeatMode(){
-        isRepeatOne = !isRepeatOne;
+    public void setRepeatOne(boolean value){
+        isRepeatOne = value;
+    }
+
+    public void setRepeatAll(boolean value){
+        isRepeatAll = value;
+    }
+
+    public boolean getIsShuffling(){
+        return isShuffling;
     }
 
     public boolean getIsRepeatingOne(){
         return isRepeatOne;
+    }
+
+    public boolean getIsRepeatingAll(){
+        return isRepeatAll;
     }
 
     public int getNumberOfSongs(){

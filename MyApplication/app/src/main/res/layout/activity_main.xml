@@ -85,10 +85,10 @@
 
     <ImageButton
         android:id="@+id/stopButton"
-        android:layout_width="87dp"
-        android:layout_height="88dp"
-        android:layout_alignTop="@+id/nextButton"
-        android:layout_toEndOf="@+id/backButton"
+        android:layout_width="53dp"
+        android:layout_height="47dp"
+        android:layout_below="@+id/timeLeftText"
+        android:layout_toStartOf="@+id/lblAuthor"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
         android:src="@drawable/stop_button" />
@@ -161,11 +161,21 @@
         android:layout_width="49dp"
         android:layout_height="39dp"
         android:layout_above="@+id/nextButton"
+        android:layout_toStartOf="@+id/nextButton"
+        android:background="@android:color/transparent"
+        android:scaleType="fitXY"
+        android:src="@drawable/repeatone_button" />
+
+    <ImageButton
+        android:id="@+id/repeatAll"
+        android:layout_width="49dp"
+        android:layout_height="39dp"
+        android:layout_above="@+id/nextButton"
         android:layout_alignParentEnd="true"
         android:layout_marginEnd="40dp"
         android:background="@android:color/transparent"
         android:scaleType="fitXY"
-        android:src="@drawable/repeatone_button" />
+        android:src="@drawable/repeatall_button" />
 
     <ImageView
         android:id="@+id/imgAlbumArt"

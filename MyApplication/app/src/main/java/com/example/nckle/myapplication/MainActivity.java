@@ -177,7 +177,7 @@ public class MainActivity extends Activity {
         repeatButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                topMediaPlayer.toggleRepeatMode();
+                topMediaPlayer.repeatOne();
             }
         });
 
@@ -213,18 +213,19 @@ public class MainActivity extends Activity {
 
     }
 
+    // Crash on s4
     private void switchPlayButton() {
-        stopButton.setEnabled(false);
-        stopButton.setVisibility(View.GONE);
-        playButton.setEnabled(true);
-        playButton.setVisibility(View.VISIBLE);
+//        stopButton.setEnabled(false);
+//        stopButton.setVisibility(View.GONE);
+//        playButton.setEnabled(true);
+//        playButton.setVisibility(View.VISIBLE);
     }
-
+    // Crash on s4
     private void switchStopButton() {
-        playButton.setEnabled(false);
-        playButton.setVisibility(View.GONE);
-        stopButton.setEnabled(true);
-        stopButton.setVisibility(View.VISIBLE);
+//        playButton.setEnabled(false);
+//        playButton.setVisibility(View.GONE);
+//        stopButton.setEnabled(true);
+//        stopButton.setVisibility(View.VISIBLE);
     }
 
     @Override
