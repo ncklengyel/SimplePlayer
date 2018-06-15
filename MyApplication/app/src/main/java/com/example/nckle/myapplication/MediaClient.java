@@ -3,26 +3,25 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.provider.MediaStore;
 import android.util.Log;
 
-import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpPost;
-import com.koushikdutta.async.http.AsyncHttpRequest;
 import com.koushikdutta.async.http.AsyncHttpResponse;
 import com.koushikdutta.async.http.body.JSONObjectBody;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.MalformedURLException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
+import java.nio.charset.Charset;
 
-import static android.media.MediaPlayer.*;
 import static com.example.nckle.myapplication.Utils.convertJSONtoBitmap;
+import static com.example.nckle.myapplication.Utils.readAll;
 
 public class MediaClient implements AbstractMediaComponent {
 
@@ -37,7 +36,6 @@ public class MediaClient implements AbstractMediaComponent {
     private boolean isRepeatAll = false;
     private boolean isPlaying = false;
     private int mVolume = AbstractMediaComponent.DEFAULT_VOLUME;
-
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
@@ -60,17 +58,19 @@ public class MediaClient implements AbstractMediaComponent {
         if (!isStreaming) {
             isPlaying = true;
             doPost("play");
-        } else {
+        } else if(mSong != null){
             mMediaPlayer.start();
         }
     }
 
     public void next(){
         doPost("next");
+        toggleModes(false);
     }
 
     public void previous(){
         doPost("previous");
+        toggleModes(false);
     }
 
     public void shuffle(){
@@ -102,9 +102,13 @@ public class MediaClient implements AbstractMediaComponent {
     public int getCurrentPosition(){
         if (isStreaming) {
             return mMediaPlayer.getCurrentPosition();
+        } else {
+            Integer currentPosition = (Integer) new GetTask().doInBackground(getBaseUrl() + "/seek", "seek");
+            if (currentPosition != null) {
+                return currentPosition;
+            }
+            return 0;
         }
-        // TODO get duration from server I guess
-        return 0;
     }
 
     public int getDuration(){
@@ -185,14 +189,14 @@ public class MediaClient implements AbstractMediaComponent {
         if (isStreaming) {
             float computedVolume = Utils.getComputedVolume(mVolume);
             mMediaPlayer.setVolume(computedVolume,computedVolume);
-        }else{
+        } else {
             String url = getBaseUrl() + "/volume";
             AsyncHttpPost post = new AsyncHttpPost(url);
             JSONObject jsonObject = new JSONObject();
 
             try {
                 jsonObject.put("volume",mVolume);
-            }catch (JSONException e){
+            } catch (JSONException e){
                 e.printStackTrace();
             }
 
@@ -204,11 +208,7 @@ public class MediaClient implements AbstractMediaComponent {
                     //deal with response
                 }
             });
-
-
-
         }
-
     }
 
     private void doPost(final String command){
@@ -219,8 +219,7 @@ public class MediaClient implements AbstractMediaComponent {
             public void onCompleted(Exception e, AsyncHttpResponse source, String result) {
                 if (result == null) {
                     Log.d("MediaClient response:", "result is null");
-
-                }else{
+                } else {
                     Log.d("MediaClient response:", result);
                     try {
                         JSONObject response = new JSONObject(result);
@@ -243,9 +242,6 @@ public class MediaClient implements AbstractMediaComponent {
                                         response.get("url").toString()
                                 );
                             }
-                            if (isStreaming) {
-                                toggleModes(false);
-                            }
                         }
                     } catch (JSONException jsonE) {
                         jsonE.printStackTrace();
@@ -254,6 +250,7 @@ public class MediaClient implements AbstractMediaComponent {
             }
         });
     }
+
     public int getVolume(){
         return  mVolume;
     }

@@ -36,7 +36,7 @@ public class Playlist {
         }
 
         if (currentIndex > lastIndex)
-            reset();
+            reset(true, false);
     }
 
     public void previous(){
@@ -50,7 +50,8 @@ public class Playlist {
         }
 
         if (currentIndex < firstIndex)
-            reset();
+            reset(false, false
+            );
     }
 
     public Song getCurrentSong(){
@@ -93,7 +94,15 @@ public class Playlist {
         return 0;
     }
 
-    public void reset(){
-        currentIndex = firstIndex;
+    public void reset(boolean isNext, boolean isReset){
+        if (!isRepeatAll || isReset) {
+            currentIndex = firstIndex;
+        } else {
+            if (isNext) {
+                currentIndex = firstIndex;
+            } else {
+                currentIndex = getNumberOfSongs() - 1;
+            }
+        }
     }
 }

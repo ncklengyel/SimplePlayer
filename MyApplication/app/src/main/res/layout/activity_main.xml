@@ -167,7 +167,7 @@
         android:src="@drawable/repeatone_button" />
 
     <ImageButton
-        android:id="@+id/repeatAll"
+        android:id="@+id/repeatAllButton"
         android:layout_width="49dp"
         android:layout_height="39dp"
         android:layout_above="@+id/nextButton"

@@ -8,6 +8,8 @@ import android.os.Environment;
 import android.util.Base64;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -93,4 +95,12 @@ public class Utils {
         return 1-((float)(Math.log(AbstractMediaComponent.MAX_VOLUME - volume)/Math.log(AbstractMediaComponent.MAX_VOLUME)));
     }
 
+    public static String readAll(Reader rd) throws IOException {
+        StringBuilder sb = new StringBuilder();
+        int cp;
+        while ((cp = rd.read()) != -1) {
+            sb.append((char) cp);
+        }
+        return sb.toString();
+    }
 }

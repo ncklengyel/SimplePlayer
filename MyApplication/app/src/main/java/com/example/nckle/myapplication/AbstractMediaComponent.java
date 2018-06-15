@@ -2,6 +2,8 @@ package com.example.nckle.myapplication;
 
 import android.graphics.Bitmap;
 
+import org.json.JSONObject;
+
 interface AbstractMediaComponent {
 
     int MAX_VOLUME = 10;

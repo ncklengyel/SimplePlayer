@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.content.SharedPreferences;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.text.format.Formatter;
 import android.view.View;
@@ -28,6 +29,7 @@ public class MainActivity extends Activity {
     private ImageButton pauseButton;
     private ImageButton shuffleButton;
     private ImageButton repeatButton;
+    private ImageButton repeatAllButton;
     private ImageButton stopButton;
     private SeekBar seekBar;
     private SeekBar seekBarVolume;
@@ -49,6 +51,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy tp = StrictMode.ThreadPolicy.LAX;
+        StrictMode.setThreadPolicy(tp);
+
+
         setContentView(R.layout.activity_main);
 
         if (!(checkSelfPermission(android.Manifest.permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED)) {
@@ -65,9 +71,9 @@ public class MainActivity extends Activity {
         playButton = (ImageButton) findViewById(R.id.playButton);
         nextButton = (ImageButton) findViewById(R.id.nextButton);
         previousButton = (ImageButton) findViewById(R.id.backButton);
-        previousButton = (ImageButton) findViewById(R.id.backButton);
         pauseButton = (ImageButton) findViewById(R.id.pauseButton);
         repeatButton = (ImageButton) findViewById(R.id.repeatButton);
+        repeatAllButton = (ImageButton) findViewById(R.id.repeatAllButton);
         shuffleButton = (ImageButton) findViewById(R.id.shuffleButton);
         stopButton = (ImageButton) findViewById(R.id.stopButton);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
@@ -215,6 +221,13 @@ public class MainActivity extends Activity {
             @Override
             public void onClick(View v) {
                 topMediaPlayer.repeatOne();
+            }
+        });
+
+        repeatAllButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                topMediaPlayer.repeatAll();
             }
         });
 
