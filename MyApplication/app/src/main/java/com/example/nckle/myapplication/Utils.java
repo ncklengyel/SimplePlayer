@@ -78,8 +78,8 @@ public class Utils {
         if(currentVolume < 0)
             return 0;
 
-        if (currentVolume > AbstractMediaComponent.MAX_VOLUME)
-            return AbstractMediaComponent.MAX_VOLUME;
+        if (currentVolume >= AbstractMediaComponent.MAX_VOLUME)
+            return 1;
 
         return 1-((float)(Math.log(AbstractMediaComponent.MAX_VOLUME - currentVolume)/Math.log(AbstractMediaComponent.MAX_VOLUME)));
     }

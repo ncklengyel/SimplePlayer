@@ -97,6 +97,21 @@ public class MediaServer implements AbstractMediaComponent {
             }
         });
 
+        mHttpSever.post("/setvolume", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+
+                try {
+                    JSONObject body = new JSONObject(request.getBody().get().toString());
+                    setVolume(body.getInt("volume"));
+                    response.send(buildResponse("setvolume","ok"));
+                }catch (JSONException e) {
+                    response.send(buildResponse("setvolume","Error"));
+                    e.printStackTrace();
+                }
+            }
+        });
+
         mHttpSever.get("/", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
