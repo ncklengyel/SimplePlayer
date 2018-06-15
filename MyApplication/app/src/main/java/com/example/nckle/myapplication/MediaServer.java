@@ -197,32 +197,38 @@ public class MediaServer implements AbstractMediaComponent {
     }
 
     public void play(){
-        mMediaPlayer.start();
+        if (mPlayList.getNumberOfSongs() != 0) {
+            mMediaPlayer.start();
+        }
     }
 
     public void next(){
-        if (!mPlayList.getIsRepeatingOne()) {
-            mPlayList.next();
-        }
-        mMediaPlayer.stop();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        float computedVolume = Utils.getComputedVolume(mVolume);
-        mMediaPlayer.setVolume(computedVolume,computedVolume);
-        if (!isStreaming) {
-            mMediaPlayer.start();
+        if (mPlayList.getNumberOfSongs() != 0) {
+            if (!mPlayList.getIsRepeatingOne()) {
+                mPlayList.next();
+            }
+            mMediaPlayer.stop();
+            mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+            float computedVolume = Utils.getComputedVolume(mVolume);
+            mMediaPlayer.setVolume(computedVolume,computedVolume);
+            if (!isStreaming) {
+                mMediaPlayer.start();
+            }
         }
     }
 
     public void previous(){
-        if (!mPlayList.getIsRepeatingOne()) {
-            mPlayList.previous();
-        }
-        mMediaPlayer.stop();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        float computedVolume = Utils.getComputedVolume(mVolume);
-        mMediaPlayer.setVolume(computedVolume,computedVolume);
-        if(!isStreaming) {
-            mMediaPlayer.start();
+        if (mPlayList.getNumberOfSongs() != 0) {
+            if (!mPlayList.getIsRepeatingOne()) {
+                mPlayList.previous();
+            }
+            mMediaPlayer.stop();
+            mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+            float computedVolume = Utils.getComputedVolume(mVolume);
+            mMediaPlayer.setVolume(computedVolume,computedVolume);
+            if(!isStreaming) {
+                mMediaPlayer.start();
+            }
         }
     }
 
@@ -231,10 +237,12 @@ public class MediaServer implements AbstractMediaComponent {
     }
 
     public void stop(){
-        mMediaPlayer.stop();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        float computedVolume = Utils.getComputedVolume(mVolume);
-        mMediaPlayer.setVolume(computedVolume,computedVolume);
+        if (mPlayList.getNumberOfSongs() != 0 && mMediaPlayer.isPlaying()) {
+            mMediaPlayer.stop();
+            mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+            float computedVolume = Utils.getComputedVolume(mVolume);
+            mMediaPlayer.setVolume(computedVolume,computedVolume);
+        }
     }
 
     public void repeatOne(){

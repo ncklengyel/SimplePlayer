@@ -63,7 +63,6 @@ public class Playlist {
     public void shuffle(){
         if (!isRepeatOne) {
             isShuffling = !isShuffling;
-            next();
         }
     }
 

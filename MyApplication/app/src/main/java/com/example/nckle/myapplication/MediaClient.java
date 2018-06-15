@@ -65,12 +65,14 @@ public class MediaClient implements AbstractMediaComponent {
 
     public void next(){
         doPost("next");
-        toggleModes(false);
+        if (mSong != null)
+            toggleModes(false);
     }
 
     public void previous(){
         doPost("previous");
-        toggleModes(false);
+        if (mSong != null)
+            toggleModes(false);
     }
 
     public void shuffle(){
