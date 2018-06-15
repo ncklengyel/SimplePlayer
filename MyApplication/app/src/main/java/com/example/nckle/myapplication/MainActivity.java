@@ -30,6 +30,7 @@ public class MainActivity extends Activity {
     private ImageButton repeatButton;
     private ImageButton stopButton;
     private SeekBar seekBar;
+    private SeekBar seekBarVolume;
     private TextView timeRight;
     private TextView timeLeft;
     private TopMediaPlayer topMediaPlayer;
@@ -40,7 +41,6 @@ public class MainActivity extends Activity {
     private TextView lblAuthor;
     private TextView lblAlbum;
     private ImageView imgAlbumArt;
-
 
     private boolean isClient = false;
     public static final int REQUEST_CODE = 1;
@@ -71,6 +71,9 @@ public class MainActivity extends Activity {
         shuffleButton = (ImageButton) findViewById(R.id.shuffleButton);
         stopButton = (ImageButton) findViewById(R.id.stopButton);
         seekBar = (SeekBar) findViewById(R.id.seekBar);
+        seekBarVolume = (SeekBar) findViewById(R.id.seekBarVolume);
+        seekBarVolume.setMax(AbstractMediaComponent.MAX_VOLUME);
+        seekBarVolume.setProgress(AbstractMediaComponent.DEFAULT_VOLUME);
         timeLeft = (TextView) findViewById(R.id.timeLeftText);
         timeRight = (TextView) findViewById(R.id.timeRightText);
         clientSwitch = (Switch) findViewById(R.id.clientSwitch);
@@ -129,6 +132,23 @@ public class MainActivity extends Activity {
                 }
 
                 handler.postDelayed(this, 500);
+            }
+        });
+
+        seekBarVolume.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int volume, boolean fromUser) {
+                topMediaPlayer.setVolume(volume);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
             }
         });
 

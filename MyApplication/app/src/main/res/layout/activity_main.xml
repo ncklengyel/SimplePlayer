@@ -148,8 +148,8 @@
 
     <ImageButton
         android:id="@+id/shuffleButton"
-        android:layout_width="71dp"
-        android:layout_height="39dp"
+        android:layout_width="49dp"
+        android:layout_height="30dp"
         android:layout_above="@+id/nextButton"
         android:layout_alignStart="@+id/backButton"
         android:background="@android:color/transparent"
@@ -185,4 +185,20 @@
         android:layout_alignStart="@+id/backButton"
         android:layout_marginTop="85dp"
         android:src="@android:color/transparent" />
+
+    <SeekBar
+        android:id="@+id/seekBarVolume"
+        android:layout_width="157dp"
+        android:layout_height="37dp"
+        android:layout_below="@+id/timeLeftText"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/volumeText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/seekBar"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-164dp"
+        android:text="Volume" />
 </RelativeLayout>

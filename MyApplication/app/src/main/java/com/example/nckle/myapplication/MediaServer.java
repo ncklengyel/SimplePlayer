@@ -34,9 +34,17 @@ public class MediaServer implements AbstractMediaComponent {
         } else {
             mMediaPlayer = new MediaPlayer();
         }
-        mHost = pHost;
-        mHttpSever = new AsyncHttpServer();
 
+        //set the volume of the mediaplayer
+        //if you want to change the volume of the player you need to compute the volume with
+        // Utils.getComputedVolume and then pass it to mMediaPlayer.setVolume function
+        float computedVolume = Utils.getComputedVolume(AbstractMediaComponent.DEFAULT_VOLUME);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
+      
+        mHost = pHost;
+
+        mHttpSever = new AsyncHttpServer();
+      
         mHttpSever.post("/play", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
@@ -154,6 +162,21 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 response.send(buildResponse("seek", mMediaPlayer.getDuration()));
+            }
+        });
+
+        mHttpSever.post("/setvolume", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+
+                try {
+                    JSONObject body = new JSONObject(request.getBody().get().toString());
+                    setVolume(body.getInt("volume"));
+                    response.send(buildResponse("setvolume","ok"));
+                }catch (JSONException e) {
+                    response.send(buildResponse("setvolume","Error"));
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -293,8 +316,9 @@ public class MediaServer implements AbstractMediaComponent {
         return json;
     }
 
-    public void setVolume(int level){
-
+    public void setVolume(int volume){
+        float computedVolume = Utils.getComputedVolume(volume);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
     }
 
 }
