@@ -124,6 +124,7 @@ public class MainActivity extends Activity {
                 lblAuthor.setText(topMediaPlayer.getAuthor());
                 lblAlbum.setText(topMediaPlayer.getAlbum());
                 imgAlbumArt.setImageBitmap(topMediaPlayer.getAlbumImage());
+                seekBarVolume.setProgress(topMediaPlayer.getVolume());
 
                 if (topMediaPlayer.isPlaying()) {
                     switchStopButton();

@@ -1,5 +1,4 @@
 package com.example.nckle.myapplication;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.media.AudioManager;
@@ -8,9 +7,12 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
 
+import com.koushikdutta.async.callback.CompletedCallback;
 import com.koushikdutta.async.http.AsyncHttpClient;
 import com.koushikdutta.async.http.AsyncHttpPost;
+import com.koushikdutta.async.http.AsyncHttpRequest;
 import com.koushikdutta.async.http.AsyncHttpResponse;
+import com.koushikdutta.async.http.body.JSONObjectBody;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,6 +36,8 @@ public class MediaClient implements AbstractMediaComponent {
     private boolean isRepeatOne = false;
     private boolean isRepeatAll = false;
     private boolean isPlaying = false;
+    private int mVolume = AbstractMediaComponent.DEFAULT_VOLUME;
+
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
@@ -41,6 +45,7 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     public MediaClient(Context pContext, String pHost){
+        setVolume(mVolume);
         String[] hostParams = pHost.split(":");
         String host = hostParams[0];
         int port = Integer.parseInt(hostParams[1].trim());
@@ -176,8 +181,34 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     public void setVolume(int volume){
-        float computedVolume = Utils.getComputedVolume(volume);
-        mMediaPlayer.setVolume(computedVolume,computedVolume);
+        mVolume = Utils.validateVolumeInt(volume);
+        if (isStreaming) {
+            float computedVolume = Utils.getComputedVolume(mVolume);
+            mMediaPlayer.setVolume(computedVolume,computedVolume);
+        }else{
+            String url = getBaseUrl() + "/volume";
+            AsyncHttpPost post = new AsyncHttpPost(url);
+            JSONObject jsonObject = new JSONObject();
+
+            try {
+                jsonObject.put("volume",mVolume);
+            }catch (JSONException e){
+                e.printStackTrace();
+            }
+
+            JSONObjectBody body = new JSONObjectBody(jsonObject);
+            post.setBody(body);
+            AsyncHttpClient.getDefaultInstance().executeString(post, new AsyncHttpClient.StringCallback() {
+                @Override
+                public void onCompleted(Exception e, AsyncHttpResponse source, String result) {
+                    //deal with response
+                }
+            });
+
+
+
+        }
+
     }
 
     private void doPost(final String command){
@@ -222,6 +253,9 @@ public class MediaClient implements AbstractMediaComponent {
                 }
             }
         });
+    }
+    public int getVolume(){
+        return  mVolume;
     }
 
     private void toggleModes(boolean isStopping){

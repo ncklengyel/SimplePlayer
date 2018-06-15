@@ -90,4 +90,7 @@ public class TopMediaPlayer implements AbstractMediaComponent {
         component.setIsStreaming(pIsStreaming);
     }
 
+    public int getVolume(){
+        return component.getVolume();
+    }
 }

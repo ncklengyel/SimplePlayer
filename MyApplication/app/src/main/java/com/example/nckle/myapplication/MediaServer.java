@@ -21,6 +21,7 @@ public class MediaServer implements AbstractMediaComponent {
     private Playlist mPlayList;
     private boolean isStreaming = false;
     private String mHost;
+    private int mVolume = AbstractMediaComponent.DEFAULT_VOLUME;
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
@@ -165,16 +166,24 @@ public class MediaServer implements AbstractMediaComponent {
             }
         });
 
-        mHttpSever.post("/setvolume", new HttpServerRequestCallback() {
+        mHttpSever.get("/volume", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                response.send(buildResponse("volume", mVolume));
+            }
+        });
+
+        mHttpSever.post("/volume", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
 
                 try {
                     JSONObject body = new JSONObject(request.getBody().get().toString());
-                    setVolume(body.getInt("volume"));
-                    response.send(buildResponse("setvolume","ok"));
+                    mVolume = body.getInt("volume");
+                    setVolume(mVolume);
+                    response.send(buildResponse("volume",mVolume));
                 }catch (JSONException e) {
-                    response.send(buildResponse("setvolume","Error"));
+                    response.send(buildResponse("volume","Error"));
                     e.printStackTrace();
                 }
             }
@@ -202,6 +211,8 @@ public class MediaServer implements AbstractMediaComponent {
         }
         mMediaPlayer.stop();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+        float computedVolume = Utils.getComputedVolume(mVolume);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
         if (!isStreaming) {
             mMediaPlayer.start();
         }
@@ -213,6 +224,8 @@ public class MediaServer implements AbstractMediaComponent {
         }
         mMediaPlayer.stop();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+        float computedVolume = Utils.getComputedVolume(mVolume);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
         if(!isStreaming) {
             mMediaPlayer.start();
         }
@@ -225,6 +238,8 @@ public class MediaServer implements AbstractMediaComponent {
     public void stop(){
         mMediaPlayer.stop();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+        float computedVolume = Utils.getComputedVolume(mVolume);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
     }
 
     public void repeatOne(){
@@ -265,6 +280,8 @@ public class MediaServer implements AbstractMediaComponent {
         mMediaPlayer.stop();
         mPlayList.reset();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+        float computedVolume = Utils.getComputedVolume(mVolume);
+        mMediaPlayer.setVolume(computedVolume,computedVolume);
     }
 
     public void release(){
@@ -316,8 +333,13 @@ public class MediaServer implements AbstractMediaComponent {
         return json;
     }
 
+    public int getVolume(){
+        return  mVolume;
+    }
+
     public void setVolume(int volume){
-        float computedVolume = Utils.getComputedVolume(volume);
+        mVolume = Utils.validateVolumeInt(volume);
+        float computedVolume = Utils.getComputedVolume(mVolume);
         mMediaPlayer.setVolume(computedVolume,computedVolume);
     }
 

@@ -72,16 +72,25 @@ public class Utils {
 
     }
 
-    //Inspiré du code suivant: https://stackoverflow.com/questions/5215459/android-mediaplayer-setvolume-function
-    public static float getComputedVolume(int currentVolume){
-
-        if(currentVolume < 0)
+    public static int validateVolumeInt(int volume){
+        if (volume < 0)
             return 0;
 
-        if (currentVolume >= AbstractMediaComponent.MAX_VOLUME)
+        if (volume >= AbstractMediaComponent.MAX_VOLUME)
+            return AbstractMediaComponent.MAX_VOLUME;
+
+        return volume;
+    }
+
+    //Inspiré du code suivant: https://stackoverflow.com/questions/5215459/android-mediaplayer-setvolume-function
+    public static float getComputedVolume(int aVolume){
+
+        int volume = validateVolumeInt(aVolume);
+
+        if (volume == AbstractMediaComponent.MAX_VOLUME)
             return 1;
 
-        return 1-((float)(Math.log(AbstractMediaComponent.MAX_VOLUME - currentVolume)/Math.log(AbstractMediaComponent.MAX_VOLUME)));
+        return 1-((float)(Math.log(AbstractMediaComponent.MAX_VOLUME - volume)/Math.log(AbstractMediaComponent.MAX_VOLUME)));
     }
 
 }
