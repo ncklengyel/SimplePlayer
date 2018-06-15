@@ -30,7 +30,7 @@ public class Playlist {
         if (!isShuffling) {
             currentIndex++;
         } else if(isRepeatOne) {
-
+            currentIndex = currentIndex;
         } else {
             currentIndex = getRandomNumber(this.getNumberOfSongs());
         }
@@ -44,7 +44,7 @@ public class Playlist {
         if (!isShuffling) {
             currentIndex--;
         } else if(isRepeatOne) {
-
+            currentIndex = currentIndex;
         } else {
             currentIndex = getRandomNumber(this.getNumberOfSongs());
         }
@@ -65,8 +65,25 @@ public class Playlist {
             next();
         }
     }
-    public void repeat(){
-        isRepeatOne = !isRepeatOne;
+
+    public void setRepeatOne(boolean value){
+        isRepeatOne = value;
+    }
+
+    public void setRepeatAll(boolean value){
+        isRepeatAll = value;
+    }
+
+    public boolean getIsShuffling(){
+        return isShuffling;
+    }
+
+    public boolean getIsRepeatingOne(){
+        return isRepeatOne;
+    }
+
+    public boolean getIsRepeatingAll(){
+        return isRepeatAll;
     }
 
     public int getNumberOfSongs(){

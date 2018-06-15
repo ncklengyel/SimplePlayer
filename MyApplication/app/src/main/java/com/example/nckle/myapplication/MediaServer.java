@@ -1,6 +1,7 @@
 package com.example.nckle.myapplication;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.media.MediaPlayer;
 import com.koushikdutta.async.http.server.AsyncHttpServer;
@@ -19,12 +20,13 @@ public class MediaServer implements AbstractMediaComponent {
     private Context mContext;
     private Playlist mPlayList;
     private boolean isStreaming = false;
+    private String mHost;
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
     }
 
-    public MediaServer(Context pContext){
+    public MediaServer(Context pContext, String pHost){
         mPlayList = new Playlist(Utils.getMusicOnDevice());
         mContext = pContext;
         if (mPlayList.getCurrentSong() != null) {
@@ -38,14 +40,24 @@ public class MediaServer implements AbstractMediaComponent {
         // Utils.getComputedVolume and then pass it to mMediaPlayer.setVolume function
         float computedVolume = Utils.getComputedVolume(AbstractMediaComponent.DEFAULT_VOLUME);
         mMediaPlayer.setVolume(computedVolume,computedVolume);
+      
+        mHost = pHost;
 
         mHttpSever = new AsyncHttpServer();
-
+      
         mHttpSever.post("/play", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-                response.send(buildResponse("play", mPlayList.getCurrentSong().getJSON()));
+
+                response.send(mPlayList.getCurrentSong().getJSON(isPlaying(), mHost));
                 play();
+            }
+        });
+
+        mHttpSever.get("^(/play|/stop|/pause|/previous|/next|/song)", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                response.send(mPlayList.getCurrentSong().getJSON(isPlaying(), mHost));
             }
         });
 
@@ -54,14 +66,14 @@ public class MediaServer implements AbstractMediaComponent {
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                stop();
                reset();
-               response.send(buildResponse("stop", mPlayList.getCurrentSong().getJSON()));
+               response.send(mPlayList.getCurrentSong().getJSON(isPlaying(), mHost));
             }
         });
 
         mHttpSever.post("/song", new HttpServerRequestCallback() {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
-                response.send(buildResponse("song", mPlayList.getCurrentSong().getJSON()));
+                response.send( mPlayList.getCurrentSong().getJSON(isPlaying(), mHost));
             }
         });
 
@@ -69,7 +81,7 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 pause();
-                response.send(buildResponse("pause", mPlayList.getCurrentSong().getJSON()));
+                response.send(mPlayList.getCurrentSong().getJSON(isPlaying(), mHost));
             }
         });
 
@@ -77,7 +89,7 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 next();
-                response.send(buildResponse("next", mPlayList.getCurrentSong().getJSON()));
+                response.send( mPlayList.getCurrentSong().getJSON(isPlaying(), mHost));
             }
         });
 
@@ -85,7 +97,7 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 previous();
-                response.send(buildResponse("previous", mPlayList.getCurrentSong().getJSON()));
+                response.send(mPlayList.getCurrentSong().getJSON(isPlaying(), mHost));
             }
         });
 
@@ -93,7 +105,63 @@ public class MediaServer implements AbstractMediaComponent {
             @Override
             public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
                 shuffle();
-                response.send(buildResponse("shuffle", mPlayList.getCurrentSong().getJSON()));
+                response.send(mPlayList.getCurrentSong().getJSON(isPlaying(), mHost));
+            }
+        });
+
+        mHttpSever.get("/shuffle", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                shuffle();
+                response.send(buildResponse("shuffle", mPlayList.getIsShuffling()));
+            }
+        });
+
+        mHttpSever.post("/repeatOne", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                repeatOne();
+                response.send(buildResponse("repeatOne", mPlayList.getIsRepeatingOne()));
+            }
+        });
+
+        mHttpSever.post("/repeatOne", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                repeatOne();
+                response.send(buildResponse("repeatOne", mPlayList.getIsRepeatingOne()));
+            }
+        });
+
+        mHttpSever.post("/loop", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                repeatAll();
+                response.send(buildResponse("loop", mPlayList.getIsRepeatingAll()));
+            }
+        });
+
+        mHttpSever.get("/loop", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                repeatAll();
+                response.send(buildResponse("loop", mPlayList.getIsRepeatingAll()));
+            }
+        });
+
+        mHttpSever.post("/seek", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                // TODO this is missing
+//                seekTo();
+//                response.send(buildResponse("seek", mPlayList.getIsRepeatingAll()));
+            }
+        });
+
+        mHttpSever.get("/seek", new HttpServerRequestCallback() {
+            @Override
+            public void onRequest(AsyncHttpServerRequest request, AsyncHttpServerResponse response) {
+                response.send(buildResponse("seek", mMediaPlayer.getDuration()));
             }
         });
 
@@ -129,40 +197,44 @@ public class MediaServer implements AbstractMediaComponent {
     }
 
     public void next(){
+        if (!mPlayList.getIsRepeatingOne()) {
+            mPlayList.next();
+        }
         mMediaPlayer.stop();
-        mPlayList.next();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        if(!isStreaming) {
+        if (!isStreaming) {
             mMediaPlayer.start();
         }
     }
 
     public void previous(){
+        if (!mPlayList.getIsRepeatingOne()) {
+            mPlayList.previous();
+        }
         mMediaPlayer.stop();
-        mPlayList.previous();
         mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
         if(!isStreaming) {
             mMediaPlayer.start();
         }
-
     }
 
     public void shuffle(){
-        mMediaPlayer.stop();
         mPlayList.shuffle();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
-        if(!isStreaming) {
-            mMediaPlayer.start();
-        }
     }
 
     public void stop(){
         mMediaPlayer.stop();
+        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
     }
 
-    public void toggleRepeatMode(){
-        mPlayList.repeat();
-        mMediaPlayer = MediaPlayer.create(mContext, mPlayList.getCurrentSong().getPath());
+    public void repeatOne(){
+        mPlayList.setRepeatAll(false);
+        mPlayList.setRepeatOne(!mPlayList.getIsRepeatingOne());
+    }
+
+    public void repeatAll(){
+        mPlayList.setRepeatOne(false);
+        mPlayList.setRepeatAll(!mPlayList.getIsRepeatingAll());
     }
 
     public int getCurrentPosition(){
@@ -232,7 +304,7 @@ public class MediaServer implements AbstractMediaComponent {
         return null;
     }
 
-    private JSONObject buildResponse(String command, String value){
+    private JSONObject buildResponse(String command, Object value){
         JSONObject json = new JSONObject();
         try {
             json.put(command, value);

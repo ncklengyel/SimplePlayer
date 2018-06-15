@@ -33,10 +33,11 @@ public class MediaClient implements AbstractMediaComponent {
     private boolean isShuffling = false;
     private boolean isRepeatOne = false;
     private boolean isRepeatAll = false;
+    private boolean isPlaying = false;
 
     public void setIsStreaming(boolean pIsStreaming) {
         isStreaming = pIsStreaming;
-        toggleModes();
+        toggleModes(false);
     }
 
     public MediaClient(Context pContext, String pHost){
@@ -44,6 +45,7 @@ public class MediaClient implements AbstractMediaComponent {
         String host = hostParams[0];
         int port = Integer.parseInt(hostParams[1].trim());
 
+        isPlaying = false;
         mContext = pContext;
         mHost = host;
         mPort = port;
@@ -51,6 +53,7 @@ public class MediaClient implements AbstractMediaComponent {
     }
     public void play(){
         if (!isStreaming) {
+            isPlaying = true;
             doPost("play");
         } else {
             mMediaPlayer.start();
@@ -72,15 +75,23 @@ public class MediaClient implements AbstractMediaComponent {
 
     public void stop(){
         if (!isStreaming) {
+            isPlaying = false;
             doPost("stop");
         } else {
-            mMediaPlayer.stop();
+             toggleModes(true);
         }
     }
 
-    public void toggleRepeatMode(){
+    public void repeatOne(){
+        isRepeatAll = false;
         isRepeatOne = !isRepeatOne;
-        doPost("repeat");
+        doPost("repeatOne");
+    }
+
+    public void repeatAll(){
+        isRepeatOne = false;
+        isRepeatAll = !isRepeatAll;
+        doPost("loop");
     }
 
     public int getCurrentPosition(){
@@ -103,6 +114,8 @@ public class MediaClient implements AbstractMediaComponent {
     public void seekTo(int position){
         if (isStreaming) {
             mMediaPlayer.seekTo(position);
+        } else {
+            doPost("seekTo");
         }
     }
 
@@ -147,7 +160,11 @@ public class MediaClient implements AbstractMediaComponent {
     }
 
     public boolean isPlaying(){
-        return false;
+        if (isStreaming) {
+            return mMediaPlayer.isPlaying();
+        } else {
+            return isPlaying;
+        }
     }
 
     private String getBaseUrl(){
@@ -176,16 +193,28 @@ public class MediaClient implements AbstractMediaComponent {
                     Log.d("MediaClient response:", result);
                     try {
                         JSONObject response = new JSONObject(result);
-                        JSONObject song = new JSONObject((String)response.get(command));
-                        mSong = new Song(
-                                song.get("title").toString(),
-                                song.get("artist").toString(),
-                                song.get("album").toString(),
-                                song.get("length").toString(),
-                                convertJSONtoBitmap(song.get("albumImage").toString())
-                        );
-                        if (isStreaming) {
-                            toggleModes();
+                        if (response.get("title") != null) {
+                            if(response.get("url") == null) {
+                                mSong = new Song(
+                                        response.get("title").toString(),
+                                        response.get("artist").toString(),
+                                        response.get("album").toString(),
+                                        response.get("length").toString(),
+                                        convertJSONtoBitmap(response.get("albumImage").toString())
+                                );
+                            } else {
+                                mSong = new Song(
+                                        response.get("title").toString(),
+                                        response.get("artist").toString(),
+                                        response.get("album").toString(),
+                                        response.get("length").toString(),
+                                        convertJSONtoBitmap(response.get("albumImage").toString()),
+                                        response.get("url").toString()
+                                );
+                            }
+                            if (isStreaming) {
+                                toggleModes(false);
+                            }
                         }
                     } catch (JSONException jsonE) {
                         jsonE.printStackTrace();
@@ -195,14 +224,16 @@ public class MediaClient implements AbstractMediaComponent {
         });
     }
 
-    private void toggleModes(){
+    private void toggleModes(boolean isStopping){
         mMediaPlayer.reset();
         if(isStreaming) {
             try {
-                mMediaPlayer.setDataSource("http://" + mHost + ":" + mPort);
+                mMediaPlayer.setDataSource(mContext, mSong.getPath());
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.prepare();
-                mMediaPlayer.start();
+                if(!isStopping) {
+                    mMediaPlayer.start();
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
