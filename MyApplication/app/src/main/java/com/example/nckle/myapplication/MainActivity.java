@@ -2,6 +2,7 @@ package com.example.nckle.myapplication;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.CompoundButton;
 
 public class MainActivity extends Activity {
 
+    SharedPreferences pref;
     private ImageButton playButton;
     private ImageButton nextButton;
     private ImageButton previousButton;
@@ -51,6 +53,7 @@ public class MainActivity extends Activity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.REQUEST_CODE);
         }
 
+        pref = getApplicationContext().getSharedPreferences("manets", 0);
         playButton = (ImageButton) findViewById(R.id.playButton);
         nextButton = (ImageButton) findViewById(R.id.nextButton);
         previousButton = (ImageButton) findViewById(R.id.backButton);
@@ -83,15 +86,17 @@ public class MainActivity extends Activity {
         });
 
         topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
+        String host = pref.getString("host", "192.168.0.103:8080");
+        clientHostText.setText(host);
 
         final Handler handler = new Handler();
 
         MainActivity.this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
-
                 int songDuration = topMediaPlayer.getDuration(); //Duration of the song in mms
                 int currentPosition = topMediaPlayer.getCurrentPosition(); //current position of the song currently playing
+
                 seekBar.setMax(songDuration);
                 seekBar.setProgress(currentPosition);
                 timeLeft.setText(Utils.millisecondToMMSS(currentPosition));
@@ -188,7 +193,11 @@ public class MainActivity extends Activity {
                 // do something, the isChecked will be
                 // true if the switch is in the On position
                 if (isChecked) {
-                    switchToClient(clientHostText.getText().toString());
+                    SharedPreferences.Editor editor = pref.edit();
+                    String host = clientHostText.getText().toString();
+                    switchToClient(host);
+                    editor.putString("host", host);
+                    editor.apply();
                 } else {
                     switchToServer();
                 }
