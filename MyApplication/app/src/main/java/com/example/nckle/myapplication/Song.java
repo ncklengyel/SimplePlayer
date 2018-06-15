@@ -70,7 +70,7 @@ public class Song {
         return null;
     }
 
-    public String getJSON(boolean isPlaying) {
+    public String getJSON(boolean isPlaying, String serverIpAddress) {
         JSONObject json = new JSONObject();
         try {
             json.put("title", getTitle());
@@ -79,6 +79,7 @@ public class Song {
             json.put("album", getAlbum());
             json.put("albumImage", getAlbumImageJSON());
             json.put("isPlaying", isPlaying);
+            json.put("url", "http://" + serverIpAddress);
         } catch (JSONException jsonE) {
             // TODO handle this exception
         }
@@ -114,6 +115,22 @@ public class Song {
         album = pAlbum;
         length = pLength;
         albumImage = pAlbumImage;
+    }
+
+    public Song(
+            String pTitle,
+            String pArtist,
+            String pAlbum,
+            String pLength,
+            Bitmap pAlbumImage,
+            String pHost
+    ){
+        title = pTitle;
+        artist = pArtist;
+        album = pAlbum;
+        length = pLength;
+        albumImage = pAlbumImage;
+        path = Uri.parse(pHost);
     }
 
 }

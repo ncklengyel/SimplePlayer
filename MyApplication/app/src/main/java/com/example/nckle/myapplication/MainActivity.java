@@ -3,8 +3,10 @@ package com.example.nckle.myapplication;
 import android.Manifest;
 import android.app.Activity;
 import android.content.SharedPreferences;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.text.format.Formatter;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -15,6 +17,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.content.pm.PackageManager;
 import android.widget.CompoundButton;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -53,6 +56,11 @@ public class MainActivity extends Activity {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, MainActivity.REQUEST_CODE);
         }
 
+        if (!(checkSelfPermission(Manifest.permission.ACCESS_WIFI_STATE) == PackageManager.PERMISSION_GRANTED)) {
+            //File write logic here
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_WIFI_STATE}, MainActivity.REQUEST_CODE);
+        }
+
         pref = getApplicationContext().getSharedPreferences("manets", 0);
         playButton = (ImageButton) findViewById(R.id.playButton);
         nextButton = (ImageButton) findViewById(R.id.nextButton);
@@ -85,9 +93,17 @@ public class MainActivity extends Activity {
 
         });
 
-        topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
-        String host = pref.getString("host", "192.168.0.103:8080");
+        String ipAddress = "192.168.0.103";
+        try {
+            WifiManager wifiManager = (WifiManager) this.getApplicationContext().getSystemService(WIFI_SERVICE);
+            ipAddress = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
+        } catch (Exception e) {
+            Toast.makeText(this, "need wifi permission", Toast.LENGTH_LONG).show();
+        }
+
+        String host = pref.getString("host", ipAddress + ":8080");
         clientHostText.setText(host);
+        topMediaPlayer = new TopMediaPlayer(new MediaServer(this, host));
 
         final Handler handler = new Handler();
 
@@ -190,16 +206,16 @@ public class MainActivity extends Activity {
 
         clientSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                String host = clientHostText.getText().toString();
                 // do something, the isChecked will be
                 // true if the switch is in the On position
                 if (isChecked) {
                     SharedPreferences.Editor editor = pref.edit();
-                    String host = clientHostText.getText().toString();
                     switchToClient(host);
                     editor.putString("host", host);
                     editor.apply();
                 } else {
-                    switchToServer();
+                    switchToServer(host);
                 }
 
             }
@@ -239,9 +255,9 @@ public class MainActivity extends Activity {
         topMediaPlayer = new TopMediaPlayer(new MediaClient(this, aHost));
     }
 
-    private void switchToServer() {
+    private void switchToServer(String aHost) {
         topMediaPlayer.release();
-        topMediaPlayer = new TopMediaPlayer(new MediaServer(this));
+        topMediaPlayer = new TopMediaPlayer(new MediaServer(this, aHost));
     }
 
 }

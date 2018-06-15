@@ -25,7 +25,6 @@ import static com.example.nckle.myapplication.Utils.convertJSONtoBitmap;
 public class MediaClient implements AbstractMediaComponent {
 
     private MediaPlayer mMediaPlayer = new MediaPlayer();
-    private String mHostStream;
     private String mHost;
     private int mPort;
     private Context mContext;
@@ -48,7 +47,6 @@ public class MediaClient implements AbstractMediaComponent {
 
         isPlaying = false;
         mContext = pContext;
-        mHostStream = "http://" + host + ":" + port;
         mHost = host;
         mPort = port;
         doPost("song");
@@ -195,13 +193,24 @@ public class MediaClient implements AbstractMediaComponent {
                     try {
                         JSONObject response = new JSONObject(result);
                         if (response.get("title") != null) {
-                            mSong = new Song(
-                                    response.get("title").toString(),
-                                    response.get("artist").toString(),
-                                    response.get("album").toString(),
-                                    response.get("length").toString(),
-                                    convertJSONtoBitmap(response.get("albumImage").toString())
-                            );
+                            if(response.get("url") == null) {
+                                mSong = new Song(
+                                        response.get("title").toString(),
+                                        response.get("artist").toString(),
+                                        response.get("album").toString(),
+                                        response.get("length").toString(),
+                                        convertJSONtoBitmap(response.get("albumImage").toString())
+                                );
+                            } else {
+                                mSong = new Song(
+                                        response.get("title").toString(),
+                                        response.get("artist").toString(),
+                                        response.get("album").toString(),
+                                        response.get("length").toString(),
+                                        convertJSONtoBitmap(response.get("albumImage").toString()),
+                                        response.get("url").toString()
+                                );
+                            }
                             if (isStreaming) {
                                 toggleModes(false);
                             }
@@ -218,7 +227,7 @@ public class MediaClient implements AbstractMediaComponent {
         mMediaPlayer.reset();
         if(isStreaming) {
             try {
-                mMediaPlayer.setDataSource(mHostStream);
+                mMediaPlayer.setDataSource(mContext, mSong.getPath());
                 mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
                 mMediaPlayer.prepare();
                 if(!isStopping) {
