@@ -190,15 +190,16 @@
         android:id="@+id/seekBarVolume"
         android:layout_width="157dp"
         android:layout_height="37dp"
-        android:layout_below="@+id/timeLeftText"
-        android:layout_centerHorizontal="true" />
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="116dp"
+        android:layout_toEndOf="@+id/lblAuthor" />
 
     <TextView
         android:id="@+id/volumeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/seekBar"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="-164dp"
+        android:layout_above="@+id/seekBarVolume"
+        android:layout_alignEnd="@+id/seekBar"
+        android:layout_marginBottom="-116dp"
         android:text="Volume" />
 </RelativeLayout>
